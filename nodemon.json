@@ -1,5 +1,5 @@
 {
-  "watch": ["./"],
+  "watch": ["./**/*.ts"],
   "ext": "ts",
   "ignore": ["node_modules"],
   "exec": "ts-node-dev server.ts"
