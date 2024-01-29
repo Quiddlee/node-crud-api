@@ -7,7 +7,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "start:dev": "ts-node-dev nodemon server.ts",
+    "start:dev": "nodemon",
     "start:prod": "npm run build && node ./build/bundle.js",
     "build": "webpack --config ./webpack.config.ts --env mode=production",
     "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
