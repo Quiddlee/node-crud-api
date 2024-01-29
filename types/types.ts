@@ -1,3 +1,5 @@
+import { IncomingMessage } from 'http';
+
 export type User = {
   id: string;
   username: string;
@@ -6,3 +8,5 @@ export type User = {
 };
 
 export type UserList = User[];
+
+export type Req = IncomingMessage;
