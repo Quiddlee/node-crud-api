@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true, es6: true },
+  env: { es2020: true, es6: true },
   extends: [
     'airbnb',
     'airbnb-typescript',
@@ -8,7 +8,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:import/recommended',
     'plugin:node/recommended',
-    'prettier',
+    'plugin:prettier/recommended',
   ],
   ignorePatterns: [
     '.eslintrc.cjs',
