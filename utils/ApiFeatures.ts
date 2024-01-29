@@ -1,6 +1,8 @@
-import { Req } from '../types/types';
 // eslint-disable-next-line import/order
+import { Req } from '../types/types';
 import Response, { JsonFn, Res, StatusFn } from './Response';
+// eslint-disable-next-line import/no-cycle
+import Route from './Route';
 
 export type ExtendedRes = Res & {
   json: JsonFn;
@@ -12,8 +14,6 @@ class ApiFeatures {
 
   private res: ExtendedRes;
 
-  private routeStr: string = '';
-
   constructor(req: Req, res: Res) {
     const response = new Response(res);
 
@@ -22,19 +22,7 @@ class ApiFeatures {
   }
 
   route(route: string) {
-    this.routeStr = route;
-    return this;
-  }
-
-  get(cb: (req: Req, res: ExtendedRes) => void) {
-    const baseURL = `http://${this.req.headers.host}/`;
-    const endpoint = this.req?.url ?? '';
-
-    const { pathname } = new URL(endpoint, baseURL);
-
-    if (this.routeStr === pathname) {
-      cb(this.req, this.res);
-    }
+    return new Route(route, this.req, this.res);
   }
 
   private extendRes(res: Res, json: JsonFn, status: StatusFn) {
