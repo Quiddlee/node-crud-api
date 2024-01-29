@@ -1,9 +1,8 @@
 import 'dotenv/config';
-
 import http from 'http';
-import { URL } from 'url';
 
 import { users } from './data/data';
+import { StatusCode } from './types/enums';
 
 const server = http.createServer((req, res) => {
   const baseURL = `http://${req.headers.host}/`;
@@ -12,11 +11,18 @@ const server = http.createServer((req, res) => {
 
   if (pathname === '/api/users')
     res
-      .writeHead(200, { 'Content-type': 'application/json' })
+      .writeHead(StatusCode.SUCCESS, { 'Content-type': 'application/json' })
+      .end(JSON.stringify(users));
+
+  if (pathname === '/api/users')
+    res
+      .writeHead(StatusCode.SUCCESS, { 'Content-type': 'application/json' })
       .end(JSON.stringify(users));
 });
 
 const port = Number(process.env.PORT);
-server.listen(port, '127.0.0.1', () => {
+const host = process.env.HOST;
+server.listen(port, host, () => {
+  // eslint-disable-next-line no-console
   console.log(`App running on port ${port}...`);
 });
