@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Req } from '../types/types';
-import { ExtendedRes } from './ApiFeatures';
+import { ExtendedRes } from './Api';
 
 class Route {
   private route: string;

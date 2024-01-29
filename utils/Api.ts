@@ -9,7 +9,7 @@ export type ExtendedRes = Res & {
   status: StatusFn;
 };
 
-class ApiFeatures {
+class Api {
   private req: Req;
 
   private res: ExtendedRes;
@@ -37,4 +37,4 @@ class ApiFeatures {
   }
 }
 
-export default ApiFeatures;
+export default Api;

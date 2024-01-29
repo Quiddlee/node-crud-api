@@ -3,14 +3,14 @@ import http from 'http';
 
 import { users } from './data/data';
 import { StatusCode } from './types/enums';
-import ApiFeatures from './utils/ApiFeatures';
+import Api from './utils/Api';
 
 const server = http.createServer((req, res) => {
   // const baseURL = `http://${req.headers.host}/`;
   // const endpoint = req?.url ?? '/api';
   // const { pathname } = new URL(endpoint, baseURL);
 
-  const api = new ApiFeatures(req, res);
+  const api = new Api(req, res);
 
   api.route('/api/users').get((_, resp) => {
     resp.status(StatusCode.SUCCESS).json(users);
