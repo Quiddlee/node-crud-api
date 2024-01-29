@@ -3,8 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.ts",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
-    "start": "nodemon"
+    "start:dev": "nodemon",
+    "start:prod": "npx cross-env NODE_ENV=production & nodemon",
+    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint --fix --ext ts",
+    "format": "prettier \"./**/*.{ts,css}\"",
+    "format:fix": "prettier --write \"./**/*.{ts,css}\"",
+    "type-check": "tsc --noEmit"
   },
   "author": "Bohdan Shcherbyna",
   "license": "ISC",
@@ -12,6 +21,7 @@
     "@types/node": "^20.11.10",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.1",
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "^19.0.4",
