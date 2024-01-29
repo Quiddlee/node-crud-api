@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import http from 'http';
 
+import * as uuid from 'uuid';
+
 import { users } from './data/data';
 import { StatusCode } from './types/enums';
 
@@ -9,15 +11,38 @@ const server = http.createServer((req, res) => {
   const endpoint = req?.url ?? '/api';
   const { pathname } = new URL(endpoint, baseURL);
 
+  // Get all users
   if (pathname === '/api/users')
     res
       .writeHead(StatusCode.SUCCESS, { 'Content-type': 'application/json' })
       .end(JSON.stringify(users));
+  // Get user by id
+  else if (
+    pathname.slice(0, pathname.lastIndexOf('/')) === '/api/users' &&
+    pathname.slice(pathname.lastIndexOf('/') + 1) !== 'users'
+  ) {
+    const id = pathname.slice(pathname.lastIndexOf('/') + 1);
 
-  if (pathname === '/api/users')
+    if (!uuid.validate(id)) {
+      res
+        .writeHead(StatusCode.BAD_REQUEST)
+        .end('The provided id is not valid uuid');
+      return;
+    }
+
+    const user = users.filter((usr) => usr.id === id);
+
+    if (!user) {
+      res.writeHead(StatusCode.NOT_FOUND).end('User not found!');
+      return;
+    }
+
     res
       .writeHead(StatusCode.SUCCESS, { 'Content-type': 'application/json' })
-      .end(JSON.stringify(users));
+      .end(JSON.stringify(user));
+  } else {
+    res.writeHead(StatusCode.SUCCESS).end('The route does not exist!');
+  }
 });
 
 const port = Number(process.env.PORT);
