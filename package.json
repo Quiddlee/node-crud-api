@@ -7,7 +7,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "start:dev": "nodemon",
+    "start:dev": "ts-node-dev  nodemon",
     "start:prod": "npx cross-env NODE_ENV=production & nodemon",
     "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --fix --ext ts",
