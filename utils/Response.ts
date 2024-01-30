@@ -19,7 +19,7 @@ class Response {
     this.res = res;
   }
 
-  json: JsonFn = (body: unknown) => {
+  json = (body: unknown) => {
     let responseBody = body;
 
     if (typeof body !== 'string') {
