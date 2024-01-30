@@ -1,10 +1,7 @@
 import 'dotenv/config';
 import http from 'http';
 
-import * as uuid from 'uuid';
-
-import { users } from './data/data';
-import { StatusCode } from './types/enums';
+import { getUser, getUserList } from './controllers/usersController';
 import Api from './utils/Api';
 
 // TODO: handle not found route
@@ -12,35 +9,8 @@ import Api from './utils/Api';
 const server = http.createServer((request, response) => {
   const api = new Api(request, response);
 
-  api.route('/api/users').get((_, res) => {
-    res.status(StatusCode.SUCCESS).json(users);
-  });
-
-  api.route('/api/users/:id').get((req, res) => {
-    const { id } = req.route;
-
-    if (!uuid.validate(id)) {
-      res.status(StatusCode.BAD_REQUEST).json({
-        status: 'fail',
-        message: 'The provided id is not valid uuid',
-      });
-
-      return;
-    }
-
-    const user = users.find((usr) => usr.id === id);
-
-    if (!user) {
-      res.status(StatusCode.NOT_FOUND).json({
-        status: 'fail',
-        message: 'User not found',
-      });
-
-      return;
-    }
-
-    res.status(StatusCode.SUCCESS).json(user);
-  });
+  api.route('/api/users').get(getUserList);
+  api.route('/api/users/:id').get(getUser);
 });
 
 const port = Number(process.env.PORT);
