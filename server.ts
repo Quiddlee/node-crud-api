@@ -47,5 +47,5 @@ const port = Number(process.env.PORT);
 const host = process.env.HOST;
 server.listen(port, host, () => {
   // eslint-disable-next-line no-console
-  console.log(`App running on port ${port}...`);
+  process.stdout.write(`App running on port ${port}...`);
 });

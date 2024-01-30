@@ -48,11 +48,11 @@ class Route {
   }
 
   private getId(url: string) {
-    return url.slice(this.endpoint.lastIndexOf('/') + 1).replace(':', '');
+    return url.slice(url.lastIndexOf('/') + 1).replace(':', '');
   }
 
   private excludeId(url: string) {
-    return url.slice(0, this.endpoint.lastIndexOf('/'));
+    return url.slice(0, url.lastIndexOf('/'));
   }
 
   private isDynamyc() {
