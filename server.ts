@@ -1,47 +1,46 @@
 import 'dotenv/config';
 import http from 'http';
 
+import * as uuid from 'uuid';
+
 import { users } from './data/data';
 import { StatusCode } from './types/enums';
 import Api from './utils/Api';
 
-const server = http.createServer((req, res) => {
-  // const baseURL = `http://${req.headers.host}/`;
-  // const endpoint = req?.url ?? '/api';
-  // const { pathname } = new URL(endpoint, baseURL);
+// TODO: handle not found route
 
-  const api = new Api(req, res);
+const server = http.createServer((request, response) => {
+  const api = new Api(request, response);
 
-  api.route('/api/users').get((_, resp) => {
-    resp.status(StatusCode.SUCCESS).json(users);
+  api.route('/api/users').get((_, res) => {
+    res.status(StatusCode.SUCCESS).json(users);
   });
 
-  // if (
-  //   pathname.slice(0, pathname.lastIndexOf('/')) === '/api/users' &&
-  //   pathname.slice(pathname.lastIndexOf('/') + 1) !== 'users'
-  // ) {
-  //   const id = pathname.slice(pathname.lastIndexOf('/') + 1);
+  api.route('/api/users/:id').get((req, res) => {
+    const { id } = req.route;
 
-  //   if (!uuid.validate(id)) {
-  //     res
-  //       .writeHead(StatusCode.BAD_REQUEST)
-  //       .end('The provided id is not valid uuid');
-  //     return;
-  //   }
+    if (!uuid.validate(id)) {
+      res.status(StatusCode.BAD_REQUEST).json({
+        status: 'fail',
+        message: 'The provided id is not valid uuid',
+      });
 
-  //   const user = users.filter((usr) => usr.id === id);
+      return;
+    }
 
-  //   if (!user) {
-  //     res.writeHead(StatusCode.NOT_FOUND).end('User not found!');
-  //     return;
-  //   }
+    const user = users.find((usr) => usr.id === id);
 
-  //   res
-  //     .writeHead(StatusCode.SUCCESS, { 'Content-type': 'application/json' })
-  //     .end(JSON.stringify(user));
-  // } else {
-  //   res.writeHead(StatusCode.SUCCESS).end('The route does not exist!');
-  // }
+    if (!user) {
+      res.status(StatusCode.NOT_FOUND).json({
+        status: 'fail',
+        message: 'User not found',
+      });
+
+      return;
+    }
+
+    res.status(StatusCode.SUCCESS).json(user);
+  });
 });
 
 const port = Number(process.env.PORT);

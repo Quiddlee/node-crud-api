@@ -1,13 +1,6 @@
-// eslint-disable-next-line import/order
-import { Req } from '../types/types';
 import Response, { JsonFn, Res, StatusFn } from './Response';
-// eslint-disable-next-line import/no-cycle
 import Route from './Route';
-
-export type ExtendedRes = Res & {
-  json: JsonFn;
-  status: StatusFn;
-};
+import { ExtendedRes, Req } from '../types/types';
 
 class Api {
   private req: Req;
