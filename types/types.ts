@@ -20,4 +20,5 @@ export type ExtendedRes = Res & {
 
 export type ExtendedReq = Req & {
   route: { [key: string]: string };
+  body?: Record<string, string>;
 };

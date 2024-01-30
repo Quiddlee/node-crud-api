@@ -1,4 +1,7 @@
+import { HttpMethods } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req } from '../types/types';
+
+type Cb = (req: ExtendedReq, res: ExtendedRes) => void;
 
 class Route {
   private readonly route: string;
@@ -13,14 +16,18 @@ class Route {
 
   constructor(route: string, req: Req, res: ExtendedRes) {
     this.route = route;
-    this.req = this.extendReq(req);
+    this.req = <ExtendedReq>req;
     this.res = res;
 
     this.endpoint = req?.url ?? '';
     this.baseUrl = `http://${req.headers.host}/`;
+
+    this.extendReq('route', {});
   }
 
-  get(cb: (req: ExtendedReq, res: ExtendedRes) => void) {
+  get(cb: Cb) {
+    if (this.req.method !== HttpMethods.GET) return this;
+
     if (this.isDynamyc()) {
       const routeWithoutId = this.excludeId(this.route);
       const endpointWithoutId = this.excludeId(this.endpoint);
@@ -31,7 +38,7 @@ class Route {
         cb(this.req, this.res);
       }
 
-      return;
+      return this;
     }
 
     const { pathname } = new URL(this.endpoint, this.baseUrl);
@@ -39,6 +46,43 @@ class Route {
     if (this.route === pathname) {
       cb(this.req, this.res);
     }
+
+    return this;
+  }
+
+  async post(cb: Cb) {
+    if (this.req.method !== HttpMethods.POST) return this;
+
+    const { pathname } = new URL(this.endpoint, this.baseUrl);
+
+    if (this.route === pathname) {
+      const body = await this.getBody();
+      this.extendReq('body', body);
+      cb(this.req, this.res);
+    }
+
+    return this;
+  }
+
+  private getBody() {
+    return new Promise((resolve, reject) => {
+      const bodyChunks: Uint8Array[] = [];
+
+      this.req
+        .on('data', (chunk) => {
+          bodyChunks.push(chunk);
+        })
+        .on('error', (e) => {
+          reject(e);
+        })
+        .on('end', () => {
+          const body = Buffer.concat(bodyChunks).toString();
+          resolve(JSON.parse(body));
+        })
+        .on('error', (e) => {
+          reject(e);
+        });
+    });
   }
 
   private injectId() {
@@ -59,11 +103,12 @@ class Route {
     return this.route.slice(this.route.lastIndexOf('/') + 1).startsWith(':');
   }
 
-  private extendReq(req: Req) {
-    return <ExtendedReq>{
-      ...req,
-      route: {},
-    };
+  private extendReq(field: string, value: unknown) {
+    return <ExtendedReq>Object.defineProperty(this.req, field, {
+      value,
+      writable: true,
+      configurable: true,
+    });
   }
 }
 

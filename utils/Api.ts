@@ -18,11 +18,14 @@ class Api {
 
   private extendRes(res: Res) {
     const response = new Response(res);
-    return <ExtendedRes>{
-      ...res,
-      json: response.json,
-      status: response.status,
-    };
+    return <ExtendedRes>Object.defineProperties(res, {
+      json: {
+        value: response.json,
+      },
+      status: {
+        value: response.status,
+      },
+    });
   }
 }
 
