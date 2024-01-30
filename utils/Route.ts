@@ -16,8 +16,8 @@ class Route {
     this.req = this.extendReq(req);
     this.res = res;
 
-    this.endpoint = this.req?.url ?? '';
-    this.baseUrl = `http://${this.req.headers.host}/`;
+    this.endpoint = req?.url ?? '';
+    this.baseUrl = `http://${req.headers.host}/`;
   }
 
   get(cb: (req: ExtendedReq, res: ExtendedRes) => void) {
