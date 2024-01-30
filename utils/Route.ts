@@ -1,15 +1,15 @@
 import { ExtendedReq, ExtendedRes, Req } from '../types/types';
 
 class Route {
-  private route: string;
+  private readonly route: string;
 
-  private req: ExtendedReq;
+  private readonly req: ExtendedReq;
 
-  private res: ExtendedRes;
+  private readonly res: ExtendedRes;
 
-  private endpoint: string;
+  private readonly endpoint: string;
 
-  private baseUrl: string;
+  private readonly baseUrl: string;
 
   constructor(route: string, req: Req, res: ExtendedRes) {
     this.route = route;
@@ -60,11 +60,10 @@ class Route {
   }
 
   private extendReq(req: Req) {
-    return <ExtendedReq>Object.defineProperty(req, 'route', {
-      value: {},
-      configurable: true,
-      writable: true,
-    });
+    return <ExtendedReq>{
+      ...req,
+      route: {},
+    };
   }
 }
 

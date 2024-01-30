@@ -1,32 +1,28 @@
-import Response, { JsonFn, Res, StatusFn } from './Response';
+import Response, { Res } from './Response';
 import Route from './Route';
 import { ExtendedRes, Req } from '../types/types';
 
 class Api {
-  private req: Req;
+  private readonly req: Req;
 
-  private res: ExtendedRes;
+  private readonly res: ExtendedRes;
 
   constructor(req: Req, res: Res) {
-    const response = new Response(res);
-
     this.req = req;
-    this.res = this.extendRes(res, response.json, response.status);
+    this.res = this.extendRes(res);
   }
 
   route(route: string) {
     return new Route(route, this.req, this.res);
   }
 
-  private extendRes(res: Res, json: JsonFn, status: StatusFn) {
-    return Object.defineProperties(res, {
-      json: {
-        value: json,
-      },
-      status: {
-        value: status,
-      },
-    }) as ExtendedRes;
+  private extendRes(res: Res) {
+    const response = new Response(res);
+    return <ExtendedRes>{
+      ...res,
+      json: response.json,
+      status: response.status,
+    };
   }
 }
 
