@@ -16,6 +16,10 @@ class Api {
     return new Route(route, this.req, this.res);
   }
 
+  use(cb: (req: Req, res: ExtendedRes) => void) {
+    if (!this.res.writableEnded) cb(this.req, this.res);
+  }
+
   private extendRes(res: Res) {
     const response = new Response(res);
     return <ExtendedRes>Object.defineProperties(res, {

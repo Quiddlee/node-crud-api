@@ -4,7 +4,7 @@ import { users } from '../data/data';
 import findMissingFields from '../models/user/utils/findMissingFields';
 import isUser from '../models/user/utils/isUser';
 import { StatusCode } from '../types/enums';
-import { ExtendedReq, ExtendedRes, User } from '../types/types';
+import { ExtendedReq, ExtendedRes, Req, User } from '../types/types';
 
 export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.SUCCESS).json(users);
@@ -136,5 +136,12 @@ export const deleteUser = (req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.NO_CONTENT).json({
     status: 'success',
     data: null,
+  });
+};
+
+export const notFound = (_req: Req, res: ExtendedRes) => {
+  res.status(StatusCode.NOT_FOUND).json({
+    status: 'fail',
+    message: 'The route does not exist',
   });
 };

@@ -22,3 +22,5 @@ export type ExtendedReq = Req & {
   route: { [key: string]: string };
   body?: Record<string, string>;
 };
+
+export type Cb = (req: ExtendedReq, res: ExtendedRes) => void;
