@@ -106,3 +106,35 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
     data: updatedUser,
   });
 };
+
+export const deleteUser = (req: ExtendedReq, res: ExtendedRes) => {
+  const { id } = req.route;
+
+  // TODO: abstract this logic in middleware
+  if (!uuid.validate(id)) {
+    res.status(StatusCode.BAD_REQUEST).json({
+      status: 'fail',
+      message: 'The provided id is not valid uuid',
+    });
+
+    return;
+  }
+
+  const userDeleteIndex = users.findIndex((usr) => usr.id === id);
+
+  if (userDeleteIndex === -1) {
+    res.status(StatusCode.NOT_FOUND).json({
+      status: 'fail',
+      message: 'User not found',
+    });
+
+    return;
+  }
+
+  delete users[userDeleteIndex];
+
+  res.status(StatusCode.NO_CONTENT).json({
+    status: 'success',
+    data: null,
+  });
+};

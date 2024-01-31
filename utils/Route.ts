@@ -95,7 +95,30 @@ class Route {
     return this;
   }
 
-  delete(/* cb: Cb */) {}
+  delete(cb: Cb) {
+    if (this.req.method !== HttpMethods.DELETE) return this;
+
+    if (this.isDynamyc()) {
+      const routeWithoutId = this.excludeId(this.route);
+      const endpointWithoutId = this.excludeId(this.endpoint);
+      const { pathname } = new URL(endpointWithoutId, this.baseUrl);
+
+      if (routeWithoutId === pathname) {
+        this.injectId();
+        cb(this.req, this.res);
+      }
+
+      return this;
+    }
+
+    const { pathname } = new URL(this.endpoint, this.baseUrl);
+
+    if (this.route === pathname) {
+      cb(this.req, this.res);
+    }
+
+    return this;
+  }
 
   private getBody() {
     return new Promise((resolve, reject) => {
