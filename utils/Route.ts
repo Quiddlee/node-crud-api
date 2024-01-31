@@ -64,7 +64,7 @@ class Route {
     return this;
   }
 
-  async put(cb: Cb) {
+  put(cb: Cb) {
     if (this.req.method !== HttpMethods.PUT) return this;
 
     if (this.isDynamyc()) {
@@ -74,9 +74,10 @@ class Route {
 
       if (routeWithoutId === pathname) {
         this.injectId();
-        const body = await this.getBody();
-        this.extendReq('body', body);
-        cb(this.req, this.res);
+        this.getBody().then((body) => {
+          this.extendReq('body', body);
+          cb(this.req, this.res);
+        });
       }
 
       return this;
@@ -85,13 +86,16 @@ class Route {
     const { pathname } = new URL(this.endpoint, this.baseUrl);
 
     if (this.route === pathname) {
-      const body = await this.getBody();
-      this.extendReq('body', body);
-      cb(this.req, this.res);
+      this.getBody().then((body) => {
+        this.extendReq('body', body);
+        cb(this.req, this.res);
+      });
     }
 
     return this;
   }
+
+  delete(/* cb: Cb */) {}
 
   private getBody() {
     return new Promise((resolve, reject) => {
