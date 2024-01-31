@@ -36,20 +36,7 @@ export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.SUCCESS).json(user);
 };
 
-export const createUser = (
-  req: ExtendedReq,
-  res: ExtendedRes,
-  error?: Error,
-) => {
-  if (error) {
-    res.status(StatusCode.BAD_REQUEST).json({
-      status: 'error',
-      message: error.message,
-    });
-
-    return;
-  }
-
+export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
   const { body } = req;
 
   if (!body || !isUser(body)) {
@@ -57,7 +44,7 @@ export const createUser = (
 
     res.status(StatusCode.BAD_REQUEST).json({
       status: 'fail',
-      message: `The provided data is missing neccessary fields (${missingFields.join(', ')})`,
+      message: `The provided data is missing necessary fields (${missingFields.join(', ')})`,
     });
 
     return;
