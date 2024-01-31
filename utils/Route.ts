@@ -1,7 +1,5 @@
 import { HttpMethods } from '../types/enums';
-import { ExtendedReq, ExtendedRes, Req } from '../types/types';
-
-type Cb = (req: ExtendedReq, res: ExtendedRes) => void;
+import { Cb, ExtendedReq, ExtendedRes, Req } from '../types/types';
 
 class Route {
   private readonly route: string;
@@ -50,15 +48,16 @@ class Route {
     return this;
   }
 
-  async post(cb: Cb) {
+  post(cb: Cb) {
     if (this.req.method !== HttpMethods.POST) return this;
 
     const { pathname } = new URL(this.endpoint, this.baseUrl);
 
     if (this.route === pathname) {
-      const body = await this.getBody();
-      this.extendReq('body', body);
-      cb(this.req, this.res);
+      this.getBody().then((body) => {
+        this.extendReq('body', body);
+        cb(this.req, this.res);
+      });
     }
 
     return this;
