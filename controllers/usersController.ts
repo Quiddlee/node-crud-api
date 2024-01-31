@@ -4,7 +4,7 @@ import { users } from '../data/data';
 import findMissingFields from '../models/user/utils/findMissingFields';
 import isUser from '../models/user/utils/isUser';
 import { StatusCode } from '../types/enums';
-import { ExtendedReq, ExtendedRes, User } from '../types/types';
+import { ExtendedReq, ExtendedRes } from '../types/types';
 
 export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.SUCCESS).json(users);
