@@ -64,6 +64,35 @@ class Route {
     return this;
   }
 
+  async put(cb: Cb) {
+    if (this.req.method !== HttpMethods.PUT) return this;
+
+    if (this.isDynamyc()) {
+      const routeWithoutId = this.excludeId(this.route);
+      const endpointWithoutId = this.excludeId(this.endpoint);
+      const { pathname } = new URL(endpointWithoutId, this.baseUrl);
+
+      if (routeWithoutId === pathname) {
+        this.injectId();
+        const body = await this.getBody();
+        this.extendReq('body', body);
+        cb(this.req, this.res);
+      }
+
+      return this;
+    }
+
+    const { pathname } = new URL(this.endpoint, this.baseUrl);
+
+    if (this.route === pathname) {
+      const body = await this.getBody();
+      this.extendReq('body', body);
+      cb(this.req, this.res);
+    }
+
+    return this;
+  }
+
   private getBody() {
     return new Promise((resolve, reject) => {
       const bodyChunks: Uint8Array[] = [];
@@ -79,7 +108,9 @@ class Route {
           const body = Buffer.concat(bodyChunks).toString();
 
           if (body) {
-            resolve(JSON.parse(body));
+            const parsed = JSON.parse(body);
+            delete parsed?.id;
+            resolve(parsed);
           } else {
             resolve(null);
           }

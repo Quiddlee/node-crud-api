@@ -5,6 +5,7 @@ import {
   createUser,
   getUser,
   getUserList,
+  updateUser,
 } from './controllers/usersController';
 import Api from './utils/Api';
 
@@ -14,7 +15,7 @@ const server = http.createServer((request, response) => {
   const api = new Api(request, response);
 
   api.route('/api/users').get(getUserList).post(createUser);
-  api.route('/api/users/:id').get(getUser);
+  api.route('/api/users/:id').get(getUser).put(updateUser);
 });
 
 const port = Number(process.env.PORT);
