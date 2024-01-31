@@ -1,6 +1,8 @@
 import * as uuid from 'uuid';
 
 import { users } from '../data/data';
+import findMissingFields from '../models/user/utils/findMissingFields';
+import isUser from '../models/user/utils/isUser';
 import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes, User } from '../types/types';
 
@@ -34,25 +36,38 @@ export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.SUCCESS).json(user);
 };
 
-export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
-  // TODO: validate body fields
-
-  const { body } = req;
-
-  if (body) {
-    const user = { id: uuid.v4(), ...body };
-    users.push(user as unknown as User);
-
-    res.status(StatusCode.CREATED).json({
-      status: 'success',
-      data: user,
+export const createUser = (
+  req: ExtendedReq,
+  res: ExtendedRes,
+  error?: Error,
+) => {
+  if (error) {
+    res.status(StatusCode.BAD_REQUEST).json({
+      status: 'error',
+      message: error.message,
     });
 
     return;
   }
 
-  res.status(StatusCode.BAD_REQUEST).json({
-    status: 'fail',
-    message: 'Cannot create user',
+  const { body } = req;
+
+  if (!body || !isUser(body)) {
+    const missingFields = findMissingFields(body);
+
+    res.status(StatusCode.BAD_REQUEST).json({
+      status: 'fail',
+      message: `The provided data is missing neccessary fields (${missingFields.join(', ')})`,
+    });
+
+    return;
+  }
+
+  const user = { id: uuid.v4(), ...body };
+  users.push(user);
+
+  res.status(StatusCode.CREATED).json({
+    status: 'success',
+    data: user,
   });
 };

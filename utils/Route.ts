@@ -1,7 +1,7 @@
 import { HttpMethods } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req } from '../types/types';
 
-type Cb = (req: ExtendedReq, res: ExtendedRes) => void;
+type Cb = (req: ExtendedReq, res: ExtendedRes, error?: Error) => void;
 
 class Route {
   private readonly route: string;
@@ -56,9 +56,13 @@ class Route {
     const { pathname } = new URL(this.endpoint, this.baseUrl);
 
     if (this.route === pathname) {
-      const body = await this.getBody();
-      this.extendReq('body', body);
-      cb(this.req, this.res);
+      try {
+        const body = await this.getBody();
+        this.extendReq('body', body);
+        cb(this.req, this.res);
+      } catch (e) {
+        cb(this.req, this.res, e as Error);
+      }
     }
 
     return this;
@@ -77,7 +81,12 @@ class Route {
         })
         .on('end', () => {
           const body = Buffer.concat(bodyChunks).toString();
-          resolve(JSON.parse(body));
+
+          if (body) {
+            resolve(JSON.parse(body));
+          } else {
+            reject(new Error('The body data does not exist!'));
+          }
         })
         .on('error', (e) => {
           reject(e);
