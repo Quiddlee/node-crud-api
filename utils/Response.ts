@@ -20,6 +20,8 @@ class Response {
   }
 
   json = (body: unknown) => {
+    if (this.res.writableEnded) return this;
+
     let responseBody = body;
 
     if (typeof body !== 'string') {

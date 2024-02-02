@@ -13,14 +13,16 @@ export type UserList = User[];
 
 export type Req = IncomingMessage;
 
+export type RequestBody = Record<string, string> | null;
+
 export type ExtendedRes = Res & {
   json: JsonFn;
   status: StatusFn;
 };
 
 export type ExtendedReq = Req & {
-  route: { [key: string]: string };
-  body?: Record<string, string>;
+  route: { [key: string]: string | null };
+  body: RequestBody;
 };
 
 export type Cb = (req: ExtendedReq, res: ExtendedRes) => void;

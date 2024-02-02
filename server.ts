@@ -6,8 +6,8 @@ import {
   deleteUser,
   getUser,
   getUserList,
-  notFound,
   updateUser,
+  validateId,
 } from './controllers/usersController';
 import Api from './utils/Api';
 
@@ -17,8 +17,13 @@ const server = http.createServer((request, response) => {
   const api = new Api(request, response);
 
   api.route('/api/users').get(getUserList).post(createUser);
-  api.route('/api/users/:id').get(getUser).put(updateUser).delete(deleteUser);
-  api.use(notFound);
+  api
+    .route('/api/users/:id')
+    .use(validateId)
+    .get(getUser)
+    .put(updateUser)
+    .delete(deleteUser);
+  // .use(notFound);
 });
 
 const port = Number(process.env.PORT);

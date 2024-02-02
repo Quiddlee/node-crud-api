@@ -1,6 +1,7 @@
+import { RequestBody } from '../../../types/types';
 import { REQUIRED_USER_FIELDS } from '../const';
 
-const findMissingFields = (body: Record<string, string> | undefined) => {
+const findMissingFields = (body: RequestBody) => {
   if (!body) return REQUIRED_USER_FIELDS;
 
   return REQUIRED_USER_FIELDS.map((field) => {

@@ -1,23 +1,37 @@
 import Response, { Res } from './Response';
 import Route from './Route';
-import { ExtendedRes, Req } from '../types/types';
+import { Cb, ExtendedReq, ExtendedRes, Req } from '../types/types';
 
 class Api {
-  private readonly req: Req;
+  private readonly req: ExtendedReq;
 
   private readonly res: ExtendedRes;
 
   constructor(req: Req, res: Res) {
-    this.req = req;
+    this.req = req as ExtendedReq;
     this.res = this.extendRes(res);
+
+    this.extendReq('route', {});
+    this.extendReq('body', null);
   }
 
   route(route: string) {
     return new Route(route, this.req, this.res);
   }
 
-  use(cb: (req: Req, res: ExtendedRes) => void) {
-    if (!this.res.writableEnded) cb(this.req, this.res);
+  use(cb: Cb) {
+    if (!this.res.writableEnded) {
+      cb(this.req, this.res);
+    }
+    return this;
+  }
+
+  private extendReq(field: string, value: unknown) {
+    return <ExtendedReq>Object.defineProperty(this.req, field, {
+      value,
+      writable: true,
+      configurable: true,
+    });
   }
 
   private extendRes(res: Res) {

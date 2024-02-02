@@ -1,5 +1,5 @@
 import { HttpMethods } from '../types/enums';
-import { Cb, ExtendedReq, ExtendedRes, Req } from '../types/types';
+import { Cb, ExtendedReq, ExtendedRes, Req, RequestBody } from '../types/types';
 
 class Route {
   private readonly route: string;
@@ -12,6 +12,10 @@ class Route {
 
   private readonly baseUrl: string;
 
+  private isPending: boolean = false;
+
+  private middlewareQueue: Cb[] = [];
+
   constructor(route: string, req: Req, res: ExtendedRes) {
     this.route = route;
     this.req = <ExtendedReq>req;
@@ -20,7 +24,7 @@ class Route {
     this.endpoint = req?.url ?? '';
     this.baseUrl = `http://${req.headers.host}/`;
 
-    this.extendReq('route', {});
+    this.injectId();
   }
 
   get(cb: Cb) {
@@ -32,7 +36,6 @@ class Route {
       const { pathname } = new URL(endpointWithoutId, this.baseUrl);
 
       if (routeWithoutId === pathname) {
-        this.injectId();
         cb(this.req, this.res);
       }
 
@@ -55,8 +58,12 @@ class Route {
 
     if (this.route === pathname) {
       this.getBody().then((body) => {
-        this.extendReq('body', body);
+        this.req.body = <RequestBody>body;
         cb(this.req, this.res);
+        this.isPending = false;
+        this.middlewareQueue.forEach((callback) =>
+          callback(this.req, this.res),
+        );
       });
     }
 
@@ -72,11 +79,17 @@ class Route {
       const { pathname } = new URL(endpointWithoutId, this.baseUrl);
 
       if (routeWithoutId === pathname) {
-        this.injectId();
-        this.getBody().then((body) => {
-          this.extendReq('body', body);
-          cb(this.req, this.res);
-        });
+        this.getBody()
+          .then((body) => {
+            this.req.body = <RequestBody>body;
+            cb(this.req, this.res);
+          })
+          .finally(() => {
+            this.isPending = false;
+            this.middlewareQueue.forEach((callback) =>
+              callback(this.req, this.res),
+            );
+          });
       }
 
       return this;
@@ -86,8 +99,12 @@ class Route {
 
     if (this.route === pathname) {
       this.getBody().then((body) => {
-        this.extendReq('body', body);
+        this.req.body = <RequestBody>body;
         cb(this.req, this.res);
+        this.isPending = false;
+        this.middlewareQueue.forEach((callback) =>
+          callback(this.req, this.res),
+        );
       });
     }
 
@@ -103,7 +120,6 @@ class Route {
       const { pathname } = new URL(endpointWithoutId, this.baseUrl);
 
       if (routeWithoutId === pathname) {
-        this.injectId();
         cb(this.req, this.res);
       }
 
@@ -119,7 +135,19 @@ class Route {
     return this;
   }
 
+  use(cb: Cb) {
+    if (!this.res.writableEnded && this.isPending) {
+      this.middlewareQueue.push(cb);
+      return this;
+    }
+
+    if (!this.res.writableEnded) cb(this.req, this.res);
+    return this;
+  }
+
   private getBody() {
+    this.isPending = true;
+
     return new Promise((resolve, reject) => {
       const bodyChunks: Uint8Array[] = [];
 
@@ -148,8 +176,16 @@ class Route {
   }
 
   private injectId() {
+    const routeWithoutId = this.excludeId(this.route);
+    const endpointWithoutId = this.excludeId(this.endpoint);
+    const { pathname } = new URL(endpointWithoutId, this.baseUrl);
+
+    const isDynamic = routeWithoutId === pathname;
+
     this.req.route = {
-      [this.getId(this.route)]: this.getId(this.endpoint),
+      [this.getId(this.route)]: isDynamic
+        ? this.getId(this.req?.url ?? '')
+        : null,
     };
   }
 
@@ -163,14 +199,6 @@ class Route {
 
   private isDynamyc() {
     return this.route.slice(this.route.lastIndexOf('/') + 1).startsWith(':');
-  }
-
-  private extendReq(field: string, value: unknown) {
-    return <ExtendedReq>Object.defineProperty(this.req, field, {
-      value,
-      writable: true,
-      configurable: true,
-    });
   }
 }
 

@@ -6,21 +6,23 @@ import isUser from '../models/user/utils/isUser';
 import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req, User } from '../types/types';
 
+export const validateId = (req: ExtendedReq, res: ExtendedRes) => {
+  const { id } = req.route;
+
+  if (!id || uuid.validate(id)) return;
+
+  res.status(StatusCode.BAD_REQUEST).json({
+    status: 'fail',
+    message: 'The provided id is not valid uuid',
+  });
+};
+
 export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.SUCCESS).json(users);
 };
 
 export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
   const { id } = req.route;
-
-  if (!uuid.validate(id)) {
-    res.status(StatusCode.BAD_REQUEST).json({
-      status: 'fail',
-      message: 'The provided id is not valid uuid',
-    });
-
-    return;
-  }
 
   const user = users.find((usr) => usr.id === id);
 
@@ -49,6 +51,7 @@ export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
 
     return;
   }
+  console.log(body);
 
   const user = { id: uuid.v4(), ...body };
   users.push(user);
@@ -64,16 +67,6 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
     body,
     route: { id },
   } = req;
-
-  // TODO: abstract this logic in middleware
-  if (!uuid.validate(id)) {
-    res.status(StatusCode.BAD_REQUEST).json({
-      status: 'fail',
-      message: 'The provided id is not valid uuid',
-    });
-
-    return;
-  }
 
   if (!body || !isUser(body)) {
     const missingFields = findMissingFields(body);
@@ -109,16 +102,6 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
 
 export const deleteUser = (req: ExtendedReq, res: ExtendedRes) => {
   const { id } = req.route;
-
-  // TODO: abstract this logic in middleware
-  if (!uuid.validate(id)) {
-    res.status(StatusCode.BAD_REQUEST).json({
-      status: 'fail',
-      message: 'The provided id is not valid uuid',
-    });
-
-    return;
-  }
 
   const userDeleteIndex = users.findIndex((usr) => usr.id === id);
 
