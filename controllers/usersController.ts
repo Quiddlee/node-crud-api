@@ -6,19 +6,6 @@ import isUser from '../models/user/utils/isUser';
 import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req, User } from '../types/types';
 
-export const validateBody = (req: ExtendedReq, res: ExtendedRes) => {
-  const { body } = req;
-
-  if (body && isUser(body)) return;
-
-  const missingFields = findMissingFields(body);
-
-  res.status(StatusCode.BAD_REQUEST).json({
-    status: 'fail',
-    message: `The provided data is missing required fields (${missingFields.join(', ')})`,
-  });
-};
-
 export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.SUCCESS).json(users);
 };
@@ -41,7 +28,18 @@ export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
 };
 
 export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
-  const body = req.body as unknown as Omit<User, 'id'>;
+  const { body } = req;
+
+  if (!body || !isUser(body)) {
+    const missingFields = findMissingFields(body);
+
+    res.status(StatusCode.BAD_REQUEST).json({
+      status: 'fail',
+      message: `The provided data is missing required fields (${missingFields.join(', ')})`,
+    });
+
+    return;
+  }
 
   const user = { id: uuid.v4(), ...body };
   users.push(user);
@@ -57,6 +55,17 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
     body,
     route: { id },
   } = req;
+
+  if (!body || !isUser(body)) {
+    const missingFields = findMissingFields(body);
+
+    res.status(StatusCode.BAD_REQUEST).json({
+      status: 'fail',
+      message: `The provided data is missing required fields (${missingFields.join(', ')})`,
+    });
+
+    return;
+  }
 
   const relatedUser = users.find((usr) => usr.id === id);
   const relatedUserIndex = users.findIndex((usr) => usr.id === id);
@@ -93,7 +102,7 @@ export const deleteUser = (req: ExtendedReq, res: ExtendedRes) => {
     return;
   }
 
-  delete users[userDeleteIndex];
+  users.splice(userDeleteIndex, 1);
 
   res.status(StatusCode.NO_CONTENT).json({
     status: 'success',
