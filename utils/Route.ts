@@ -8,7 +8,7 @@ class Route {
 
   private readonly middlewareQueue: MiddlewareQueue;
 
-  constructor(
+  public constructor(
     route: string,
     routeTable: HandlersTable,
     middlewareQueue: MiddlewareQueue,
@@ -18,7 +18,7 @@ class Route {
     this.middlewareQueue = middlewareQueue;
   }
 
-  get(cb: Cb) {
+  public get(cb: Cb) {
     this.routeTable[this.route] = {
       ...this.routeTable[this.route],
       [HttpMethods.GET]: cb,
@@ -33,7 +33,7 @@ class Route {
     return this;
   }
 
-  post(cb: Cb) {
+  public post(cb: Cb) {
     this.routeTable[this.route] = {
       ...this.routeTable[this.route],
       [HttpMethods.POST]: cb,
@@ -48,7 +48,7 @@ class Route {
     return this;
   }
 
-  put(cb: Cb) {
+  public put(cb: Cb) {
     this.routeTable[this.route] = {
       ...this.routeTable[this.route],
       [HttpMethods.PUT]: cb,
@@ -63,7 +63,7 @@ class Route {
     return this;
   }
 
-  delete(cb: Cb) {
+  public delete(cb: Cb) {
     this.routeTable[this.route] = {
       ...this.routeTable[this.route],
       [HttpMethods.DELETE]: cb,

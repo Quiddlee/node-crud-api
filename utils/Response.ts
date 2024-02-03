@@ -13,13 +13,13 @@ export type StatusFn = (status?: StatusCode) => Response;
 class Response {
   private statusCode: StatusCode = StatusCode.SUCCESS;
 
-  private res: Res;
+  private readonly res: Res;
 
-  constructor(res: Res) {
+  public constructor(res: Res) {
     this.res = res;
   }
 
-  json = (body: unknown) => {
+  public json = (body: unknown) => {
     if (this.res.writableEnded) return this;
 
     let responseBody = body;
@@ -35,7 +35,7 @@ class Response {
     return this;
   };
 
-  status: StatusFn = (status?: StatusCode) => {
+  public status: StatusFn = (status?: StatusCode) => {
     if (status) this.statusCode = status;
     return this;
   };
