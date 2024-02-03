@@ -10,6 +10,7 @@ import {
   HandlersTable,
   MiddlewareQueue,
   Req,
+  RequestBody,
 } from '../types/types';
 
 class Api {
@@ -24,19 +25,19 @@ class Api {
   public listen(port: number, host: string, cb: () => void) {
     http
       .createServer((req, res) => {
-        this.req = this.extendReq(req);
-        this.res = this.extendRes(res);
-
         const requestEndpoint = req?.url ?? '';
         const { routeHandler, routeEndpoint } =
           this.getRouteHandlerAndRouteEndpoint(req);
 
+        this.extendReq(req);
+        this.extendRes(res);
         this.injectId(routeEndpoint, requestEndpoint);
 
         // Getting the body is async operation. So we want to get body first,
         // then call middlewares or route handlers
         this.getBody().then((body) => {
-          this.req.body = <Record<string, string>>body;
+          this.injectBody(body);
+          console.log(this.req.body, this.req.route);
 
           // using middlewareQueue with routeTable inside.
           // In order to make sure that if .use() method called BEFORE any route
@@ -92,7 +93,7 @@ class Api {
     };
   }
 
-  private getBody() {
+  private getBody(): Promise<RequestBody> {
     return new Promise((resolve, reject) => {
       const bodyChunks: Uint8Array[] = [];
       this.req
@@ -120,34 +121,35 @@ class Api {
   }
 
   private extendReq(req: Req) {
-    return <ExtendedReq>Object.defineProperties(req, {
-      route: {
-        value: {},
-      },
-      body: {
-        value: null,
-      },
-    });
+    this.req = <ExtendedReq>{
+      ...req,
+      route: {},
+      body: null,
+    };
   }
 
   private extendRes(res: Res) {
     const response = new Response(res);
-    return <ExtendedRes>Object.defineProperties(res, {
-      json: {
-        value: response.json,
-      },
-      status: {
-        value: response.status,
-      },
-    });
+    this.res = <ExtendedRes>{
+      ...this.res,
+      json: response.json,
+      status: response.status,
+    };
+  }
+
+  private injectBody(body: RequestBody) {
+    this.req = <ExtendedReq>{ ...this.req, body };
   }
 
   private injectId(route: string, endpoint: string) {
-    const isDynamic = route.includes(':');
-    if (!isDynamic) return;
+    const isDynamicRoute = route.includes(':');
+    if (!isDynamicRoute) return;
 
-    this.req.route = {
-      [this.getId(route)]: this.getId(endpoint),
+    this.req = <ExtendedReq>{
+      ...this.req,
+      route: {
+        [this.getId(route)]: this.getId(endpoint),
+      },
     };
   }
 

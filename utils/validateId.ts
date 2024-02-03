@@ -4,7 +4,7 @@ import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes } from '../types/types';
 
 export const validateId = (req: ExtendedReq, res: ExtendedRes) => {
-  const { id } = req.route;
+  const id = req.route?.id;
 
   if (!id || uuid.validate(id)) return;
 
