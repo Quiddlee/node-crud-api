@@ -20,14 +20,13 @@ class Api {
   listen(port: number, host: string, cb: () => void) {
     http
       .createServer((req: Req, res: Res) => {
-        const requestHttpMethod = req.method as HttpMethods | undefined;
         const extendedReq = this.extendReq(req);
         const extendedRes = this.extendRes(res);
-        const endpoint = extendedReq?.url ?? '';
+        const requestEndpoint = extendedReq?.url ?? '';
 
         const { routeHandler, routeEndpoint } =
           this.getRouteHandlerAndRouteEndpoint(req);
-        this.injectId(routeEndpoint, endpoint, extendedReq);
+        this.injectId(routeEndpoint, requestEndpoint, extendedReq);
 
         this.getBody(extendedReq).then((body) => {
           extendedReq.body = <Record<string, string>>body;
@@ -35,7 +34,7 @@ class Api {
           this.middlewareQueue.forEach((middleware) => {
             if (typeof middleware === 'function') {
               middleware(extendedReq, extendedRes);
-            } else if (routeHandler && requestHttpMethod && routeHandler) {
+            } else if (routeHandler && routeHandler) {
               routeHandler(extendedReq, extendedRes);
             }
           });
@@ -54,7 +53,7 @@ class Api {
   }
 
   private getRouteHandlerAndRouteEndpoint(req: Req) {
-    const method = req.method as HttpMethods | undefined;
+    const method = <HttpMethods | undefined>req.method;
     const endpoint = req?.url ?? '';
     const baseUrl = `http://${req.headers.host}/`;
     const { pathname } = new URL(endpoint, baseUrl);
