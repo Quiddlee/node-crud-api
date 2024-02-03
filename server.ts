@@ -10,8 +10,6 @@ import {
 } from './controllers/usersController';
 import Api from './utils/Api';
 
-// TODO: handle not found route
-
 const api = new Api();
 
 const port = Number(process.env.PORT);
