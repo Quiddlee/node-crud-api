@@ -51,7 +51,6 @@ export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
 
     return;
   }
-  console.log(body);
 
   const user = { id: uuid.v4(), ...body };
   users.push(user);
