@@ -6,15 +6,16 @@ import {
   getUserList,
   notFound,
   updateUser,
-  validateId,
+  validateBody,
 } from './controllers/usersController';
 import Api from './utils/Api';
+import { validateId } from './utils/validateId';
 
 const api = new Api();
 const port = Number(process.env.PORT);
 const host = process.env.HOST;
 
-api.use(validateId);
+api.use(validateId).use(validateBody);
 api.route('/api/users').get(getUserList).post(createUser);
 api.route('/api/users/:id').get(getUser).put(updateUser).delete(deleteUser);
 api.use(notFound);
