@@ -21,15 +21,16 @@ class Api {
 
   private res: ExtendedRes = <ExtendedRes>{};
 
-  listen(port: number, host: string, cb: () => void) {
+  public listen(port: number, host: string, cb: () => void) {
     http
-      .createServer((req: Req, res: Res) => {
+      .createServer((req, res) => {
         this.req = this.extendReq(req);
         this.res = this.extendRes(res);
-        const requestEndpoint = req?.url ?? '';
 
+        const requestEndpoint = req?.url ?? '';
         const { routeHandler, routeEndpoint } =
           this.getRouteHandlerAndRouteEndpoint(req);
+
         this.injectId(routeEndpoint, requestEndpoint);
 
         // Getting the body is async operation. So we want to get body first,
@@ -52,11 +53,11 @@ class Api {
       .listen(port, host, cb);
   }
 
-  route(route: string) {
+  public route(route: string) {
     return new Route(route, this.handlersTable, this.middlewareQueue);
   }
 
-  use(cb: Cb) {
+  public use(cb: Cb) {
     this.middlewareQueue.push(cb);
     return this;
   }
