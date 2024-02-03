@@ -21,12 +21,9 @@ class Api {
     http
       .createServer((req: Req, res: Res) => {
         const requestHttpMethod = req.method as HttpMethods | undefined;
-        const extendedReq = req as ExtendedReq;
+        const extendedReq = this.extendReq(req);
         const extendedRes = this.extendRes(res);
         const endpoint = extendedReq?.url ?? '';
-
-        this.extendReq(req, 'route', {});
-        this.extendReq(req, 'body', null);
 
         const { routeHandler, routeEndpoint } =
           this.getRouteHandlerAndRouteEndpoint(req);
@@ -113,11 +110,14 @@ class Api {
     });
   }
 
-  private extendReq(req: Req, field: string, value: unknown) {
-    return <ExtendedReq>Object.defineProperty(req, field, {
-      value,
-      writable: true,
-      configurable: true,
+  private extendReq(req: Req) {
+    return <ExtendedReq>Object.defineProperties(req, {
+      route: {
+        value: {},
+      },
+      body: {
+        value: null,
+      },
     });
   }
 
