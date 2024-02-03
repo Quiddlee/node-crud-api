@@ -17,25 +17,34 @@ class Api {
 
   private readonly middlewareQueue: MiddlewareQueue = [];
 
+  private req: ExtendedReq = <ExtendedReq>{};
+
+  private res: ExtendedRes = <ExtendedRes>{};
+
   listen(port: number, host: string, cb: () => void) {
     http
       .createServer((req: Req, res: Res) => {
-        const extendedReq = this.extendReq(req);
-        const extendedRes = this.extendRes(res);
-        const requestEndpoint = extendedReq?.url ?? '';
+        this.req = this.extendReq(req);
+        this.res = this.extendRes(res);
+        const requestEndpoint = req?.url ?? '';
 
         const { routeHandler, routeEndpoint } =
           this.getRouteHandlerAndRouteEndpoint(req);
-        this.injectId(routeEndpoint, requestEndpoint, extendedReq);
+        this.injectId(routeEndpoint, requestEndpoint);
 
-        this.getBody(extendedReq).then((body) => {
-          extendedReq.body = <Record<string, string>>body;
+        // Getting the body is async operation. So we want to get body first,
+        // then call middlewares or route handlers
+        this.getBody().then((body) => {
+          this.req.body = <Record<string, string>>body;
 
+          // using middlewareQueue with routeTable inside.
+          // In order to make sure that if .use() method called BEFORE any route
+          // e.g. ID validation, we want it to run right before route handler (get, post, put...)
           this.middlewareQueue.forEach((middleware) => {
             if (typeof middleware === 'function') {
-              middleware(extendedReq, extendedRes);
-            } else if (routeHandler && routeHandler) {
-              routeHandler(extendedReq, extendedRes);
+              middleware(this.req, this.res);
+            } else if (routeHandler) {
+              routeHandler(this.req, this.res);
             }
           });
         });
@@ -82,10 +91,10 @@ class Api {
     };
   }
 
-  private getBody(req: ExtendedReq) {
+  private getBody() {
     return new Promise((resolve, reject) => {
       const bodyChunks: Uint8Array[] = [];
-      req
+      this.req
         .on('data', (chunk) => {
           bodyChunks.push(chunk);
         })
@@ -132,11 +141,11 @@ class Api {
     });
   }
 
-  private injectId(route: string, endpoint: string, req: ExtendedReq) {
+  private injectId(route: string, endpoint: string) {
     const isDynamic = route.includes(':');
     if (!isDynamic) return;
 
-    req.route = {
+    this.req.route = {
       [this.getId(route)]: this.getId(endpoint),
     };
   }
