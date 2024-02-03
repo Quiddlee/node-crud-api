@@ -1,5 +1,6 @@
 import { IncomingMessage } from 'http';
 
+import { HttpMethods } from './enums';
 import { JsonFn, Res, StatusFn } from '../utils/Response';
 
 export type User = {
@@ -26,3 +27,11 @@ export type ExtendedReq = Req & {
 };
 
 export type Cb = (req: ExtendedReq, res: ExtendedRes) => void;
+
+export type RouteTable = Record<string, Record<HttpMethods, Cb>>;
+
+export type MiddlewareQueue = (Cb | RouteTable)[];
+
+export type HandlersTable =
+  | Record<string, Record<HttpMethods, Cb>>
+  | Record<string, never>;

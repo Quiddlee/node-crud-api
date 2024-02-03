@@ -3,68 +3,88 @@ import http from 'http';
 import Response, { Res } from './Response';
 import Route from './Route';
 import { HttpMethods } from '../types/enums';
-import { Cb, ExtendedReq, ExtendedRes, Req } from '../types/types';
+import {
+  Cb,
+  ExtendedReq,
+  ExtendedRes,
+  HandlersTable,
+  MiddlewareQueue,
+  Req,
+} from '../types/types';
 
 class Api {
-  private readonly handlersTable:
-    | Record<string, Record<HttpMethods, Cb>>
-    | Record<string, never> = {};
+  private readonly handlersTable: HandlersTable = {};
+
+  private readonly middlewareQueue: MiddlewareQueue = [];
 
   listen(port: number, host: string, cb: () => void) {
     http
       .createServer((req: Req, res: Res) => {
-        const method = req.method as HttpMethods | undefined;
+        const requestHttpMethod = req.method as HttpMethods | undefined;
         const extendedReq = req as ExtendedReq;
         const extendedRes = this.extendRes(res);
+        const endpoint = extendedReq?.url ?? '';
 
         this.extendReq(req, 'route', {});
         this.extendReq(req, 'body', null);
 
-        const endpoint = req?.url ?? '';
-        const baseUrl = `http://${req.headers.host}/`;
-        const { pathname } = new URL(endpoint, baseUrl);
-        let routeHandler = this.handlersTable[pathname];
-        let routeEndpoint = <string>(
-          Object.keys(this.handlersTable).find((key) => key === pathname)
-        );
-
-        if (!routeHandler) {
-          const matchedDynamicRoute = <string>Object.keys(
-            this.handlersTable,
-          ).find((key) => {
-            return (
-              pathname.slice(0, pathname.lastIndexOf('/')) ===
-              key.slice(0, key.lastIndexOf('/'))
-            );
-          });
-
-          routeHandler = this.handlersTable[matchedDynamicRoute];
-          routeEndpoint = matchedDynamicRoute;
-        }
-
+        const { routeHandler, routeEndpoint } =
+          this.getRouteHandlerAndRouteEndpoint(req);
         this.injectId(routeEndpoint, endpoint, extendedReq);
+
         this.getBody(extendedReq).then((body) => {
           extendedReq.body = <Record<string, string>>body;
-          if (routeHandler && method) {
-            routeHandler[method]?.(extendedReq, extendedRes);
-          }
+
+          this.middlewareQueue.forEach((middleware) => {
+            if (typeof middleware === 'function') {
+              middleware(extendedReq, extendedRes);
+            } else if (routeHandler && requestHttpMethod && routeHandler) {
+              routeHandler(extendedReq, extendedRes);
+            }
+          });
         });
       })
       .listen(port, host, cb);
   }
 
   route(route: string) {
-    return new Route(route, this.handlersTable);
+    return new Route(route, this.handlersTable, this.middlewareQueue);
   }
 
-  /*
-  use(cb: Cb, req: ExtendedReq, res: ExtendedRes) {
-    if (!res.writableEnded) {
-      cb(req, res);
-    }
+  use(cb: Cb) {
+    this.middlewareQueue.push(cb);
     return this;
   }
-  */
+
+  private getRouteHandlerAndRouteEndpoint(req: Req) {
+    const method = req.method as HttpMethods | undefined;
+    const endpoint = req?.url ?? '';
+    const baseUrl = `http://${req.headers.host}/`;
+    const { pathname } = new URL(endpoint, baseUrl);
+    let routeHandler = this.handlersTable[pathname];
+    let routeEndpoint = <string>(
+      Object.keys(this.handlersTable).find((key) => key === pathname)
+    );
+
+    if (!routeHandler) {
+      const matchedDynamicRoute = <string>Object.keys(this.handlersTable).find(
+        (key) => {
+          return (
+            pathname.slice(0, pathname.lastIndexOf('/')) ===
+            key.slice(0, key.lastIndexOf('/'))
+          );
+        },
+      );
+
+      routeHandler = this.handlersTable[matchedDynamicRoute];
+      routeEndpoint = matchedDynamicRoute;
+    }
+
+    return {
+      routeEndpoint,
+      routeHandler: routeHandler?.[method as HttpMethods],
+    };
+  }
 
   private getBody(req: ExtendedReq) {
     return new Promise((resolve, reject) => {

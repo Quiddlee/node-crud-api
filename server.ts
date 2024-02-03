@@ -4,8 +4,9 @@ import {
   deleteUser,
   getUser,
   getUserList,
+  notFound,
   updateUser,
-  // validateId,
+  validateId,
 } from './controllers/usersController';
 import Api from './utils/Api';
 
@@ -20,5 +21,7 @@ api.listen(port, host, () => {
   console.log(`App running on port ${port}...`);
 });
 
+api.use(validateId);
 api.route('/api/users').get(getUserList).post(createUser);
 api.route('/api/users/:id').get(getUser).put(updateUser).delete(deleteUser);
+api.use(notFound);

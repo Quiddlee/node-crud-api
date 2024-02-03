@@ -1,19 +1,21 @@
 import { HttpMethods } from '../types/enums';
-import { Cb } from '../types/types';
+import { Cb, HandlersTable, MiddlewareQueue, RouteTable } from '../types/types';
 
 class Route {
   private readonly route: string;
 
-  private readonly routeTable:
-    | Record<string, Partial<Record<HttpMethods, Cb>>>
-    | Record<string, never> = {};
+  private readonly routeTable: RouteTable;
+
+  private readonly middlewareQueue: MiddlewareQueue;
 
   constructor(
     route: string,
-    routeTable: Record<string, Record<HttpMethods, Cb>> | Record<string, never>,
+    routeTable: HandlersTable,
+    middlewareQueue: MiddlewareQueue,
   ) {
     this.route = route;
     this.routeTable = routeTable;
+    this.middlewareQueue = middlewareQueue;
   }
 
   get(cb: Cb) {
@@ -21,6 +23,13 @@ class Route {
       ...this.routeTable[this.route],
       [HttpMethods.GET]: cb,
     };
+
+    const isRouteTableAlreadyInMiddleware = this.middlewareQueue.some((m) =>
+      Object.is(this.routeTable, m),
+    );
+
+    if (isRouteTableAlreadyInMiddleware) return this;
+    this.middlewareQueue.push(this.routeTable);
     return this;
   }
 
@@ -29,6 +38,13 @@ class Route {
       ...this.routeTable[this.route],
       [HttpMethods.POST]: cb,
     };
+
+    const isRouteTableAlreadyInMiddleware = this.middlewareQueue.some((m) =>
+      Object.is(this.routeTable, m),
+    );
+
+    if (isRouteTableAlreadyInMiddleware) return this;
+    this.middlewareQueue.push(this.routeTable);
     return this;
   }
 
@@ -37,6 +53,13 @@ class Route {
       ...this.routeTable[this.route],
       [HttpMethods.PUT]: cb,
     };
+
+    const isRouteTableAlreadyInMiddleware = this.middlewareQueue.some((m) =>
+      Object.is(this.routeTable, m),
+    );
+
+    if (isRouteTableAlreadyInMiddleware) return this;
+    this.middlewareQueue.push(this.routeTable);
     return this;
   }
 
@@ -45,6 +68,13 @@ class Route {
       ...this.routeTable[this.route],
       [HttpMethods.DELETE]: cb,
     };
+
+    const isRouteTableAlreadyInMiddleware = this.middlewareQueue.some((m) =>
+      Object.is(this.routeTable, m),
+    );
+
+    if (isRouteTableAlreadyInMiddleware) return this;
+    this.middlewareQueue.push(this.routeTable);
     return this;
   }
 }
