@@ -25,19 +25,19 @@ class Api {
   public listen(port: number, host: string, cb: () => void) {
     http
       .createServer((req, res) => {
+        this.req = this.extendReq(req);
+        this.res = this.extendRes(res);
+
         const requestEndpoint = req?.url ?? '';
         const { routeHandler, routeEndpoint } =
-          this.getRouteHandlerAndRouteEndpoint(req);
+          this.getRouteHandlerAndRouteEndpoint();
 
-        this.extendReq(req);
-        this.extendRes(res);
         this.injectId(routeEndpoint, requestEndpoint);
 
         // Getting the body is async operation. So we want to get body first,
         // then call middlewares or route handlers
         this.getBody().then((body) => {
           this.injectBody(body);
-          console.log(this.req.body, this.req.route);
 
           // using middlewareQueue with routeTable inside.
           // In order to make sure that if .use() method called BEFORE any route
@@ -63,15 +63,14 @@ class Api {
     return this;
   }
 
-  private getRouteHandlerAndRouteEndpoint(req: Req) {
-    const method = <HttpMethods | undefined>req.method;
-    const endpoint = req?.url ?? '';
-    const baseUrl = `http://${req.headers.host}/`;
+  private getRouteHandlerAndRouteEndpoint() {
+    const method = <HttpMethods | undefined>this.req.method;
+    const endpoint = this.req?.url ?? '';
+    const baseUrl = `http://${this.req.headers.host}/`;
     const { pathname } = new URL(endpoint, baseUrl);
     let routeHandler = this.handlersTable[pathname];
-    let routeEndpoint = <string>(
-      Object.keys(this.handlersTable).find((key) => key === pathname)
-    );
+    let routeEndpoint =
+      Object.keys(this.handlersTable).find((key) => key === pathname) ?? '';
 
     if (!routeHandler) {
       const matchedDynamicRoute = <string>Object.keys(this.handlersTable).find(
@@ -84,7 +83,7 @@ class Api {
       );
 
       routeHandler = this.handlersTable[matchedDynamicRoute];
-      routeEndpoint = matchedDynamicRoute;
+      routeEndpoint = matchedDynamicRoute ?? '';
     }
 
     return {
@@ -121,35 +120,43 @@ class Api {
   }
 
   private extendReq(req: Req) {
-    this.req = <ExtendedReq>{
-      ...req,
-      route: {},
-      body: null,
-    };
+    return <ExtendedReq>Object.defineProperties(req, {
+      route: {
+        value: {},
+        configurable: true,
+        writable: true,
+      },
+      body: {
+        value: null,
+        configurable: true,
+        writable: true,
+      },
+    });
   }
 
   private extendRes(res: Res) {
     const response = new Response(res);
-    this.res = <ExtendedRes>{
-      ...this.res,
-      json: response.json,
-      status: response.status,
-    };
+
+    return <ExtendedRes>Object.defineProperties(res, {
+      json: {
+        value: response.json,
+      },
+      status: {
+        value: response.status,
+      },
+    });
   }
 
   private injectBody(body: RequestBody) {
-    this.req = <ExtendedReq>{ ...this.req, body };
+    this.req.body = body;
   }
 
   private injectId(route: string, endpoint: string) {
     const isDynamicRoute = route.includes(':');
     if (!isDynamicRoute) return;
 
-    this.req = <ExtendedReq>{
-      ...this.req,
-      route: {
-        [this.getId(route)]: this.getId(endpoint),
-      },
+    this.req.route = {
+      [this.getId(route)]: this.getId(endpoint),
     };
   }
 
