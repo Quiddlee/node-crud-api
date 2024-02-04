@@ -7,18 +7,18 @@ import {
   notFound,
   updateUser,
 } from './controllers/usersController';
-import Api from './utils/Api';
+import App from './utils/app';
 import { validateId } from './utils/validateId';
 
-const api = new Api();
+const app = new App();
 const port = Number(process.env.PORT);
 const host = process.env.HOST;
 
-api.use(validateId);
-api.route('/api/users').get(getUserList).post(createUser);
-api.route('/api/users/:id').get(getUser).put(updateUser).delete(deleteUser);
-api.use(notFound);
+app.use(validateId);
+app.route('/api/users').get(getUserList).post(createUser);
+app.route('/api/users/:id').get(getUser).put(updateUser).delete(deleteUser);
+app.use(notFound);
 
-api.listen(port, host, () => {
+app.listen(port, host, () => {
   process.stdout.write(`App running on port ${port}...`);
 });

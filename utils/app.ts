@@ -1,7 +1,7 @@
-import http from 'http';
+import http, { Server } from 'http';
 
-import Response, { Res } from './Response';
-import Route from './Route';
+import Response, { Res } from './response';
+import Route from './route';
 import { HttpMethods } from '../types/enums';
 import {
   Cb,
@@ -13,7 +13,7 @@ import {
   RequestBody,
 } from '../types/types';
 
-class Api {
+class App {
   private readonly handlersTable: HandlersTable = {};
 
   private readonly middlewareQueue: MiddlewareQueue = [];
@@ -22,8 +22,10 @@ class Api {
 
   private res: ExtendedRes = <ExtendedRes>{};
 
-  public listen(port: number, host: string, cb: () => void) {
-    http
+  server: Server = <Server>{};
+
+  public listen(port: number, host: string, cb?: () => void) {
+    this.server = http
       .createServer((req, res) => {
         this.req = this.extendReq(req);
         this.res = this.extendRes(res);
@@ -165,4 +167,4 @@ class Api {
   }
 }
 
-export default Api;
+export default App;
