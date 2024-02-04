@@ -1,7 +1,7 @@
 import { IncomingMessage } from 'http';
 
-import { HttpMethods } from './enums';
-import { JsonFn, Res, StatusFn } from '../utils/Response';
+import { HttpMethods } from './enums.js';
+import { JsonFn, Res, StatusFn } from '../utils/Response.js';
 
 export type User = {
   id: string;
