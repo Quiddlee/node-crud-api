@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "es5",
     "useDefineForClassFields": true,
     "lib": ["ESNext"],
-    "module": "NodeNext",
+    "module": "esnext",
     "skipLibCheck": true,
 
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -19,4 +19,6 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
   },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }

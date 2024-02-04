@@ -72,7 +72,12 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.ts'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        moduleDirectory: ['node_modules', './'],
+      },
+      typescript: {
+        alwaysTryTypes: true,
+        project: 'tsconfig.json',
       },
     },
   },
