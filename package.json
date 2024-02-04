@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.ts",
+  "type": "module",
   "engines": {
     "node": ">=20.0.0"
   },
@@ -14,7 +15,8 @@
     "lint:fix": "eslint --fix --ext ts",
     "format": "prettier \"./**/*.{ts,css}\"",
     "format:fix": "prettier --write \"./**/*.{ts,css}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest --config ./vitest.config.ts"
   },
   "author": "Bohdan Shcherbyna",
   "license": "ISC",
@@ -42,6 +44,7 @@
     "ts-loader": "^9.5.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3",
+    "vitest": "^1.2.2",
     "webpack": "^5.90.0",
     "webpack-cli": "^5.1.4"
   },
