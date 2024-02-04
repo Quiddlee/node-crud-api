@@ -5,5 +5,6 @@ export default defineConfig({
   test: {
     globals: true,
     css: false,
+    setupFiles: ['dotenv/config'],
   },
 });
