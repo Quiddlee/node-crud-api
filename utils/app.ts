@@ -22,38 +22,15 @@ class App {
 
   private res: ExtendedRes = <ExtendedRes>{};
 
-  server: Server = <Server>{};
+  public server: Server = <Server>{};
+
+  public createServer() {
+    this.server = http.createServer(this.handleRequest);
+    return this.server;
+  }
 
   public listen(port: number, host: string, cb?: () => void) {
-    this.server = http
-      .createServer((req, res) => {
-        this.req = this.extendReq(req);
-        this.res = this.extendRes(res);
-
-        const requestEndpoint = req?.url ?? '';
-        const { routeHandler, routeEndpoint } =
-          this.getRouteHandlerAndRouteEndpoint();
-
-        this.injectId(routeEndpoint, requestEndpoint);
-
-        // Getting the body is async operation. So we want to get body first,
-        // then call middlewares or route handlers
-        this.getBody().then((body) => {
-          this.injectBody(body);
-
-          // using middlewareQueue with routeTable inside.
-          // In order to make sure that if .use() method called BEFORE any route
-          // e.g. ID validation, we want it to run right before route handler (get, post, put...)
-          this.middlewareQueue.forEach((middleware) => {
-            if (typeof middleware === 'function') {
-              middleware(this.req, this.res);
-            } else if (routeHandler) {
-              routeHandler(this.req, this.res);
-            }
-          });
-        });
-      })
-      .listen(port, host, cb);
+    this.server = http.createServer(this.handleRequest).listen(port, host, cb);
   }
 
   public route(route: string) {
@@ -64,6 +41,34 @@ class App {
     this.middlewareQueue.push(cb);
     return this;
   }
+
+  private handleRequest = (req: Req, res: Res) => {
+    this.req = this.extendReq(req);
+    this.res = this.extendRes(res);
+
+    const requestEndpoint = req?.url ?? '';
+    const { routeHandler, routeEndpoint } =
+      this.getRouteHandlerAndRouteEndpoint();
+
+    this.injectId(routeEndpoint, requestEndpoint);
+
+    // Getting the body is async operation. So we want to get body first,
+    // then call middlewares or route handlers
+    this.getBody().then((body) => {
+      this.injectBody(body);
+
+      // using middlewareQueue with routeTable inside.
+      // In order to make sure that if .use() method called BEFORE any route
+      // e.g. ID validation, we want it to run right before route handler (get, post, put...)
+      this.middlewareQueue.forEach((middleware) => {
+        if (typeof middleware === 'function') {
+          middleware(this.req, this.res);
+        } else if (routeHandler) {
+          routeHandler(this.req, this.res);
+        }
+      });
+    });
+  };
 
   private getRouteHandlerAndRouteEndpoint() {
     const method = <HttpMethods | undefined>this.req.method;
