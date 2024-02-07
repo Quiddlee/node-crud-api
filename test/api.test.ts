@@ -33,7 +33,9 @@ describe('Test scenario 1', () => {
     const res = await server.get(Routes.USERS).expect(StatusCode.SUCCESS);
     expect(res.body).toMatchObject({
       status: 'success',
-      data: [],
+      data: {
+        users: [],
+      },
     });
   });
 
@@ -42,13 +44,16 @@ describe('Test scenario 1', () => {
       .post(Routes.USERS)
       .send(uploadUserData)
       .expect(StatusCode.CREATED);
+    const { id } = res.body.data.user;
 
     expect(res.body).toStrictEqual({
       status: 'success',
-      data: { ...uploadUserData, id: res.body.data.id },
+      data: {
+        user: { ...uploadUserData, id },
+      },
     });
 
-    uploadUserId = res.body.data.id;
+    uploadUserId = id;
   });
 
   it('GET api/users/{userId}', async () => {
@@ -58,7 +63,9 @@ describe('Test scenario 1', () => {
 
     expect(res.body).toStrictEqual({
       status: 'success',
-      data: { ...uploadUserData, id: uploadUserId },
+      data: {
+        user: { ...uploadUserData, id: uploadUserId },
+      },
     });
   });
 });
