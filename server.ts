@@ -14,6 +14,7 @@ const app = new App();
 const port = Number(process.env.PORT);
 const host = process.env.HOST;
 
+// TODO: encapsulate routes in enum
 app.use(validateId);
 app.route('/api/users').get(getUserList).post(createUser);
 app.route('/api/users/:id').get(getUser).put(updateUser).delete(deleteUser);
