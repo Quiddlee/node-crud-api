@@ -1,5 +1,5 @@
 import supertest from 'supertest';
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 
 import {
   createUser,
@@ -9,6 +9,7 @@ import {
   notFound,
   updateUser,
 } from '../controllers/usersController';
+import { users } from '../data/data';
 import { Routes, StatusCode } from '../types/enums';
 import App from '../utils/app';
 import { validateId } from '../utils/validateId';
@@ -34,6 +35,10 @@ const updatedUserData = {
 let uploadUserId = '';
 
 describe('Test scenario 1', () => {
+  afterAll(() => {
+    users.splice(0);
+  });
+
   it('GET api/users', async () => {
     const res = await server.get(Routes.USERS).expect(StatusCode.SUCCESS);
     expect(res.body).toMatchObject({
