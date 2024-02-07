@@ -6,8 +6,13 @@ import isUser from '../models/user/utils/isUser';
 import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req, User } from '../types/types';
 
+// TODO: add JSDoc comments
+
 export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
-  res.status(StatusCode.SUCCESS).json(users);
+  res.status(StatusCode.SUCCESS).json({
+    status: 'success',
+    data: users,
+  });
 };
 
 export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
@@ -24,7 +29,10 @@ export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
     return;
   }
 
-  res.status(StatusCode.SUCCESS).json(user);
+  res.status(StatusCode.SUCCESS).json({
+    status: 'success',
+    data: user,
+  });
 };
 
 export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
