@@ -5,11 +5,11 @@ import { Configuration } from 'webpack';
 
 type Mode = 'production' | 'development';
 
-type Envoirment = {
+type Environment = {
   mode: Mode;
 };
 
-export default (env: Envoirment) => {
+export default (env: Environment) => {
   const config: Configuration = {
     mode: env.mode,
     devtool: false,
