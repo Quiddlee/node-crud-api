@@ -96,7 +96,7 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
     return;
   }
 
-  const updatedUser = <User>{ ...relatedUser, ...body };
+  const updatedUser = (<User>{ ...relatedUser, ...body }) as User;
   users[relatedUserIndex] = updatedUser;
 
   res.status(StatusCode.SUCCESS).json({
