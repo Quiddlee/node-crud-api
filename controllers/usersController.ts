@@ -11,7 +11,10 @@ import { ExtendedReq, ExtendedRes, Req, User } from '../types/types';
 export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.SUCCESS).json({
     status: 'success',
-    data: users,
+    results: users.length,
+    data: {
+      users,
+    },
   });
 };
 
@@ -31,7 +34,9 @@ export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
 
   res.status(StatusCode.SUCCESS).json({
     status: 'success',
-    data: user,
+    data: {
+      user,
+    },
   });
 };
 
@@ -54,7 +59,9 @@ export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
 
   res.status(StatusCode.CREATED).json({
     status: 'success',
-    data: user,
+    data: {
+      user,
+    },
   });
 };
 
@@ -92,7 +99,9 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
 
   res.status(StatusCode.SUCCESS).json({
     status: 'success',
-    data: updatedUser,
+    data: {
+      user: updatedUser,
+    },
   });
 };
 
