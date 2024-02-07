@@ -1,4 +1,4 @@
-import { RequestBody } from '../../../types/types';
+import { RequestBody } from '../../../../types/types';
 import { REQUIRED_USER_FIELDS } from '../const';
 
 const findMissingFields = (body: RequestBody) => {

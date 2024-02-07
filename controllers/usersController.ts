@@ -1,12 +1,14 @@
 import * as uuid from 'uuid';
 
 import { users } from '../data/data';
-import findMissingFields from '../models/user/utils/findMissingFields';
-import isUser from '../models/user/utils/isUser';
+import findMissingFields from '../models/user/lib/utils/findMissingFields';
+import isUser from '../models/user/lib/utils/isUser';
+import { User } from '../models/user/usersModel';
 import { StatusCode } from '../types/enums';
-import { ExtendedReq, ExtendedRes, Req, User } from '../types/types';
+import { ExtendedReq, ExtendedRes, Req } from '../types/types';
 
 // TODO: add JSDoc comments
+// TODO: add emoji response
 
 export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
   res.status(StatusCode.SUCCESS).json({
@@ -44,17 +46,17 @@ export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
   const { body } = req;
 
   if (!body || !isUser(body)) {
-    const missingFields = findMissingFields(body);
+    const missingFields = findMissingFields(body).join(', ');
 
     res.status(StatusCode.BAD_REQUEST).json({
       status: 'fail',
-      message: `The provided data is missing required fields (${missingFields.join(', ')})`,
+      message: `The provided data is missing required fields (${missingFields})`,
     });
 
     return;
   }
 
-  const user = { id: uuid.v4(), ...body };
+  const user = <User>{ id: uuid.v4(), ...body };
   users.push(user);
 
   res.status(StatusCode.CREATED).json({
@@ -72,11 +74,11 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
   } = req;
 
   if (!body || !isUser(body)) {
-    const missingFields = findMissingFields(body);
+    const missingFields = findMissingFields(body).join(', ');
 
     res.status(StatusCode.BAD_REQUEST).json({
       status: 'fail',
-      message: `The provided data is missing required fields (${missingFields.join(', ')})`,
+      message: `The provided data is missing required fields (${missingFields})`,
     });
 
     return;
@@ -94,7 +96,7 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
     return;
   }
 
-  const updatedUser = { ...relatedUser, ...body } as User;
+  const updatedUser = <User>{ ...relatedUser, ...body };
   users[relatedUserIndex] = updatedUser;
 
   res.status(StatusCode.SUCCESS).json({

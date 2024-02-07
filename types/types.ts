@@ -1,16 +1,7 @@
 import { IncomingMessage } from 'http';
 
-import { HttpMethods } from './enums.js';
-import { JsonFn, Res, StatusFn } from '../utils/response.js';
-
-export type User = {
-  id: string;
-  username: string;
-  age: number;
-  hobbies: string[] | [];
-};
-
-export type UserList = User[];
+import { HttpMethods } from './enums';
+import { JsonFn, Res, StatusFn } from '../utils/response';
 
 export type Req = IncomingMessage;
 

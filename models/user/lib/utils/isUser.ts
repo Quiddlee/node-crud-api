@@ -1,4 +1,4 @@
-import { User } from '../../../types/types';
+import { User } from '../../usersModel';
 import { REQUIRED_USER_FIELDS } from '../const';
 
 const isUser = (
