@@ -9,15 +9,15 @@ import {
   notFound,
   updateUser,
 } from '../controllers/usersController';
-import { StatusCode } from '../types/enums';
+import { Routes, StatusCode } from '../types/enums';
 import App from '../utils/app';
 import { validateId } from '../utils/validateId';
 
 const app = new App();
 
 app.use(validateId);
-app.route('/api/users').get(getUserList).post(createUser);
-app.route('/api/users/:id').get(getUser).put(updateUser).delete(deleteUser);
+app.route(Routes.USERS).get(getUserList).post(createUser);
+app.route(Routes.USERS_ID).get(getUser).put(updateUser).delete(deleteUser);
 app.use(notFound);
 
 const server = supertest(app.createServer());
@@ -30,7 +30,7 @@ let uploadUserId = '';
 
 describe('Test scenario 1', () => {
   it('GET api/users', async () => {
-    const res = await server.get('/api/users').expect(StatusCode.SUCCESS);
+    const res = await server.get(Routes.USERS).expect(StatusCode.SUCCESS);
     expect(res.body).toMatchObject({
       status: 'success',
       data: [],
@@ -39,7 +39,7 @@ describe('Test scenario 1', () => {
 
   it('POST api/users', async () => {
     const res = await server
-      .post('/api/users')
+      .post(Routes.USERS)
       .send(uploadUserData)
       .expect(StatusCode.CREATED);
 
@@ -53,7 +53,7 @@ describe('Test scenario 1', () => {
 
   it('GET api/users/{userId}', async () => {
     const res = await server
-      .get(`/api/users/${uploadUserId}`)
+      .get(`${Routes.USERS}/${uploadUserId}`)
       .expect(StatusCode.SUCCESS);
 
     expect(res.body).toStrictEqual({

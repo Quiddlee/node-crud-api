@@ -14,3 +14,8 @@ export enum HttpMethods {
   PUT = 'PUT',
   DELETE = 'DELETE',
 }
+
+export enum Routes {
+  USERS = '/api/users',
+  USERS_ID = '/api/users/:id',
+}
