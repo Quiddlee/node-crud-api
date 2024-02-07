@@ -26,6 +26,11 @@ const uploadUserData = {
   username: 'Wassup',
   hobbies: ['check', 'test', 'cool'],
 };
+const updatedUserData = {
+  age: 12,
+  username: 'updated name',
+  hobbies: ['updated hobby 1', 'updated hobby 2', 'updated hobby 3'],
+};
 let uploadUserId = '';
 
 describe('Test scenario 1', () => {
@@ -66,6 +71,39 @@ describe('Test scenario 1', () => {
       data: {
         user: { ...uploadUserData, id: uploadUserId },
       },
+    });
+  });
+
+  it('PUT api/users/{userId}', async () => {
+    const res = await server
+      .put(`${Routes.USERS}/${uploadUserId}`)
+      .send(updatedUserData)
+      .expect(StatusCode.SUCCESS);
+
+    expect(res.body).toStrictEqual({
+      status: 'success',
+      data: {
+        user: { ...updatedUserData, id: uploadUserId },
+      },
+    });
+  });
+
+  it('DELETE api/users/{userId}', async () => {
+    const res = await server
+      .delete(`${Routes.USERS}/${uploadUserId}`)
+      .expect(StatusCode.NO_CONTENT);
+
+    expect(res.body).toStrictEqual('');
+  });
+
+  it('GET api/users/{userId}', async () => {
+    const res = await server
+      .get(`${Routes.USERS}/${uploadUserId}`)
+      .expect(StatusCode.NOT_FOUND);
+
+    expect(res.body).toStrictEqual({
+      status: 'fail',
+      message: 'User not found',
     });
   });
 });
