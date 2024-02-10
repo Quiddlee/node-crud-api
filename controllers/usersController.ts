@@ -1,16 +1,16 @@
-import * as uuid from 'uuid';
-
-import { users } from '../data/data';
+import db from '../db/db';
 import findMissingFields from '../models/user/lib/utils/findMissingFields';
 import isUser from '../models/user/lib/utils/isUser';
-import { User } from '../models/user/usersModel';
 import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req } from '../types/types';
 
 // TODO: add JSDoc comments
 // TODO: add emoji response
+// TODO: handle server errors
 
-export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
+export const getUserList = async (_req: ExtendedReq, res: ExtendedRes) => {
+  const users = await db.getUserList();
+
   res.status(StatusCode.SUCCESS).json({
     status: 'success',
     results: users.length,
@@ -20,10 +20,9 @@ export const getUserList = (_req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
-export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
+export const getUser = async (req: ExtendedReq, res: ExtendedRes) => {
   const { id } = req.route;
-
-  const user = users.find((usr) => usr.id === id);
+  const user = await db.getUser(id);
 
   if (!user) {
     res.status(StatusCode.NOT_FOUND).json({
@@ -42,7 +41,7 @@ export const getUser = (req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
-export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
+export const createUser = async (req: ExtendedReq, res: ExtendedRes) => {
   const { body } = req;
 
   if (!body || !isUser(body)) {
@@ -56,8 +55,7 @@ export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
     return;
   }
 
-  const user = <User>{ id: uuid.v4(), ...body };
-  users.push(user);
+  const user = await db.createUser(body);
 
   res.status(StatusCode.CREATED).json({
     status: 'success',
@@ -67,7 +65,7 @@ export const createUser = (req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
-export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
+export const updateUser = async (req: ExtendedReq, res: ExtendedRes) => {
   const {
     body,
     route: { id },
@@ -84,10 +82,9 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
     return;
   }
 
-  const relatedUser = users.find((usr) => usr.id === id);
-  const relatedUserIndex = users.findIndex((usr) => usr.id === id);
+  const updatedUser = await db.updateUser(id, body);
 
-  if (!relatedUser) {
+  if (!updatedUser) {
     res.status(StatusCode.NOT_FOUND).json({
       status: 'fail',
       message: 'User not found',
@@ -95,9 +92,6 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
 
     return;
   }
-
-  const updatedUser = (<User>{ ...relatedUser, ...body }) as User;
-  users[relatedUserIndex] = updatedUser;
 
   res.status(StatusCode.SUCCESS).json({
     status: 'success',
@@ -107,12 +101,11 @@ export const updateUser = (req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
-export const deleteUser = (req: ExtendedReq, res: ExtendedRes) => {
+export const deleteUser = async (req: ExtendedReq, res: ExtendedRes) => {
   const { id } = req.route;
+  const isDeleted = await db.deleteUser(id);
 
-  const userDeleteIndex = users.findIndex((usr) => usr.id === id);
-
-  if (userDeleteIndex === -1) {
+  if (!isDeleted) {
     res.status(StatusCode.NOT_FOUND).json({
       status: 'fail',
       message: 'User not found',
@@ -121,15 +114,13 @@ export const deleteUser = (req: ExtendedReq, res: ExtendedRes) => {
     return;
   }
 
-  users.splice(userDeleteIndex, 1);
-
   res.status(StatusCode.NO_CONTENT).json({
     status: 'success',
     data: null,
   });
 };
 
-export const notFound = (_req: Req, res: ExtendedRes) => {
+export const notFound = async (_req: Req, res: ExtendedRes) => {
   res.status(StatusCode.NOT_FOUND).json({
     status: 'fail',
     message: 'The route does not exist',

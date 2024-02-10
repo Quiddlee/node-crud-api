@@ -19,3 +19,11 @@ export enum Routes {
   USERS = '/api/users',
   USERS_ID = '/api/users/:id',
 }
+
+export enum DBCommands {
+  GET_USER_LIST = 'getUserList',
+  GET_USER = 'getUser',
+  CREATE_USER = 'createUser',
+  UPDATE_USER = 'updateUser',
+  DELETE_USER = 'deleteUser',
+}
