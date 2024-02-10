@@ -54,19 +54,21 @@ class App {
 
     // Getting the body is async operation. So we want to get body first,
     // then call middlewares or route handlers
-    this.getBody().then((body) => {
+    this.getBody().then(async (body) => {
       this.injectBody(body);
 
       // using middlewareQueue with routeTable inside.
       // In order to make sure that if .use() method called BEFORE any route
       // e.g. ID validation, we want it to run right before route handler (get, post, put...)
-      this.middlewareQueue.forEach((middleware) => {
+
+      // eslint-disable-next-line
+      for await (const middleware of this.middlewareQueue) {
         if (typeof middleware === 'function') {
           middleware(this.req, this.res);
         } else if (routeHandler) {
-          routeHandler(this.req, this.res);
+          await routeHandler(this.req, this.res);
         }
-      });
+      }
     });
   };
 
