@@ -5,4 +5,8 @@ export type User = {
   hobbies: string[] | [];
 };
 
+export type RequestUser = Omit<User, 'id'>;
+
 export type UserList = User[];
+
+export type UserId = User['id'];
