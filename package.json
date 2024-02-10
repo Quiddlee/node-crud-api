@@ -9,6 +9,7 @@
   "scripts": {
     "start:dev": "nodemon",
     "start:prod": "npm run build && node ./build/bundle.js",
+    "start:multi": "nodemon -- --multi=true",
     "build": "webpack --config ./webpack.config.ts --env mode=production",
     "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --fix --ext ts",
@@ -53,3 +54,7 @@
     "uuid": "^9.0.1"
   }
 }
+
+
+
+
