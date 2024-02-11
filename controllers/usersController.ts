@@ -143,6 +143,18 @@ export const updateUser = async (req: ExtendedReq, res: ExtendedRes) => {
       return;
     }
 
+    const userWrongTypes = findWrongTypes(body);
+    if (userWrongTypes.length !== 0) {
+      const wrongTypes = userWrongTypes.join(', ');
+
+      res.status(StatusCode.BAD_REQUEST).json({
+        status: 'fail',
+        message: `The provided data is containing wrong types (${wrongTypes})`,
+      });
+
+      return;
+    }
+
     const updatedUser = await db.updateUser(id, body);
 
     if (!updatedUser) {
