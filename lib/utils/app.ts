@@ -166,7 +166,7 @@ class App {
 
   private filterBody(body: RequestBody) {
     return <RequestBody>{
-      ...(Number.isFinite(body?.age) && { age: body?.age }),
+      ...(body?.age !== undefined && { age: body?.age }),
       ...(body?.hobbies && { hobbies: body?.hobbies }),
       ...(body?.username && { username: body?.username }),
     };
