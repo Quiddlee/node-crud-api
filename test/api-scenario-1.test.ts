@@ -10,9 +10,9 @@ import {
   updateUser,
 } from '../controllers/usersController';
 import db from '../db/db';
+import App from '../lib/utils/app';
+import { validateId } from '../lib/utils/validateId';
 import { Routes, StatusCode } from '../types/enums';
-import App from '../utils/app';
-import { validateId } from '../utils/validateId';
 
 const app = new App();
 

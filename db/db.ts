@@ -2,10 +2,10 @@ import cluster from 'cluster';
 
 import * as uuid from 'uuid';
 
+import connectMasterDB from '../lib/utils/connectMasterDB';
+import isMulti from '../lib/utils/isMulti';
 import { RequestUser, UserId, UserList } from '../models/user/usersModel';
 import { DBCommands } from '../types/enums';
-import connectMasterDB from '../utils/connectMasterDB';
-import isMulti from '../utils/isMulti';
 
 const isWorkerThread = isMulti() && !cluster.isPrimary;
 

@@ -1,7 +1,7 @@
 import * as uuid from 'uuid';
 
-import { StatusCode } from '../types/enums';
-import { ExtendedReq, ExtendedRes } from '../types/types';
+import { StatusCode } from '../../types/enums';
+import { ExtendedReq, ExtendedRes } from '../../types/types';
 
 export const validateId = (req: ExtendedReq, res: ExtendedRes) => {
   const id = req.route?.id;

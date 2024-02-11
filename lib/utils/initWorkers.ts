@@ -1,8 +1,8 @@
 import cluster from 'cluster';
 import { availableParallelism } from 'node:os';
 
-import db from '../db/db';
-import { WorkerMessage } from '../types/types';
+import db from '../../db/db';
+import { WorkerMessage } from '../../types/types';
 
 // TODO: Move port to constants
 const NUM_CPUS = availableParallelism();

@@ -1,5 +1,5 @@
-import { User, UserList } from '../models/user/usersModel';
-import { DBCommands } from '../types/enums';
+import { User, UserList } from '../../models/user/usersModel';
+import { DBCommands } from '../../types/enums';
 
 /**
  * Connects to the database and executes the given command with the given arguments.

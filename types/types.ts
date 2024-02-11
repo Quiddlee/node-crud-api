@@ -1,8 +1,8 @@
 import { IncomingMessage } from 'http';
 
 import { DBCommands, HttpMethods } from './enums';
+import { JsonFn, Res, StatusFn } from '../lib/utils/response';
 import { RequestUser } from '../models/user/usersModel';
-import { JsonFn, Res, StatusFn } from '../utils/response';
 
 export type Req = IncomingMessage;
 

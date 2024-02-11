@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { StatusCode } from '../types/enums';
+import { StatusCode } from '../../types/enums';
 
 export type Res = ServerResponse & {
   req: IncomingMessage;

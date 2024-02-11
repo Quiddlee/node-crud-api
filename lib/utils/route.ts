@@ -1,5 +1,10 @@
-import { HttpMethods } from '../types/enums';
-import { Cb, HandlersTable, MiddlewareQueue, RouteTable } from '../types/types';
+import { HttpMethods } from '../../types/enums';
+import {
+  Cb,
+  HandlersTable,
+  MiddlewareQueue,
+  RouteTable,
+} from '../../types/types';
 
 class Route {
   private readonly route: string;

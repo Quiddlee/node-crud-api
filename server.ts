@@ -2,16 +2,24 @@ import 'dotenv/config';
 import cluster from 'cluster';
 import http from 'http';
 
-import defineNextWorker from './utils/defineNextWorker';
-import forwardRequest from './utils/forwardRequest';
-import initApp from './utils/initApp';
-import initWorkers from './utils/initWorkers';
-import isMulti from './utils/isMulti';
+import {
+  createUser,
+  deleteUser,
+  getUser,
+  getUserList,
+  notFound,
+  updateUser,
+} from './controllers/usersController';
+import { HOST, PORT } from './lib/const';
+import App from './lib/utils/app';
+import defineNextWorker from './lib/utils/defineNextWorker';
+import forwardRequest from './lib/utils/forwardRequest';
+import initWorkers from './lib/utils/initWorkers';
+import isMulti from './lib/utils/isMulti';
+import { validateId } from './lib/utils/validateId';
+import { Routes } from './types/enums';
 
 const { isPrimary } = cluster;
-
-const port = Number(process.env.PORT);
-const host = process.env.HOST;
 const isMultiMode = isMulti();
 const isMasterProcess = isPrimary && isMultiMode;
 let workerPorts: number[] = [];
@@ -25,9 +33,18 @@ if (isMasterProcess) {
       const workerCreds = defineNextWorker(workerPorts);
       forwardRequest(req, res, workerCreds);
     })
-    .listen(port, host, () => {
-      process.stdout.write(`The load balancer is running on port ${port}...\n`);
+    .listen(PORT, HOST, () => {
+      process.stdout.write(`The load balancer is running on port ${PORT}...\n`);
     });
 } else {
-  initApp();
+  const app = new App();
+
+  app.use(validateId);
+  app.route(Routes.USERS).get(getUserList).post(createUser);
+  app.route(Routes.USERS_ID).get(getUser).put(updateUser).delete(deleteUser);
+  app.use(notFound);
+
+  app.listen(PORT, HOST, () => {
+    process.stdout.write(`App running on port ${PORT}...\n`);
+  });
 }

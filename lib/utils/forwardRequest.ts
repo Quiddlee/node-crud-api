@@ -1,7 +1,7 @@
 import http from 'http';
 
 import { Res } from './response';
-import { Req, WorkerRequestData } from '../types/types';
+import { Req, WorkerRequestData } from '../../types/types';
 
 /**
  * Forwards the request to the worker with the given data.
