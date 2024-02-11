@@ -9,9 +9,9 @@ import {
   notFound,
   updateUser,
 } from '../controllers/usersController';
+import db from '../db/db';
 import { Routes, StatusCode } from '../types/enums';
 import App from '../utils/app';
-import clearData from '../utils/clearData';
 import { validateId } from '../utils/validateId';
 
 const app = new App();
@@ -30,7 +30,7 @@ const uploadUserData = {
 let uploadUserId = '';
 
 describe('Test scenario 2', () => {
-  afterAll(clearData);
+  afterAll(db.clearData);
 
   it('GET api/users should return empty array of users', async () => {
     const res = await server.get(Routes.USERS).expect(StatusCode.SUCCESS);

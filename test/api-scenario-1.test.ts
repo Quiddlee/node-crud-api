@@ -9,9 +9,9 @@ import {
   notFound,
   updateUser,
 } from '../controllers/usersController';
+import db from '../db/db';
 import { Routes, StatusCode } from '../types/enums';
 import App from '../utils/app';
-import clearData from '../utils/clearData';
 import { validateId } from '../utils/validateId';
 
 const app = new App();
@@ -35,7 +35,7 @@ const updatedUserData = {
 let uploadUserId = '';
 
 describe('Test scenario 1', () => {
-  afterAll(clearData);
+  afterAll(db.clearData);
 
   it('GET api/users', async () => {
     const res = await server.get(Routes.USERS).expect(StatusCode.SUCCESS);

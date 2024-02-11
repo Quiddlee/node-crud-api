@@ -64,6 +64,10 @@ class DB {
     this.users.splice(userDeleteIndex, 1);
     return true;
   };
+
+  public clearData = () => {
+    this.users.splice(0);
+  };
 }
 
 export default new DB();
