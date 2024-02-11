@@ -9,7 +9,7 @@ import { DBCommands } from '../types/enums';
  * @returns {Promise<TData> | never} - A promise that resolves to the data of type TData, or throws an error if no response is received from the database.
  * @throws - Error is thrown if database returns nothing
  */
-const connectDB = <TData extends User | UserList>(
+const connectMasterDB = <TData extends User | UserList>(
   command: DBCommands,
   ...args: unknown[]
 ): Promise<TData> | never =>
@@ -24,4 +24,4 @@ const connectDB = <TData extends User | UserList>(
     });
   });
 
-export default connectDB;
+export default connectMasterDB;

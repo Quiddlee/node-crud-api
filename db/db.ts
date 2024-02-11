@@ -4,7 +4,7 @@ import * as uuid from 'uuid';
 
 import { RequestUser, UserId, UserList } from '../models/user/usersModel';
 import { DBCommands } from '../types/enums';
-import connectDB from '../utils/connectDB';
+import connectMasterDB from '../utils/connectMasterDB';
 import isMulti from '../utils/isMulti';
 
 const isWorkerThread = isMulti() && !cluster.isPrimary;
@@ -14,7 +14,7 @@ class DB {
 
   public getUserList = async () => {
     if (isWorkerThread) {
-      return connectDB<UserList>(DBCommands.GET_USER_LIST);
+      return connectMasterDB<UserList>(DBCommands.GET_USER_LIST);
     }
 
     return this.users;
@@ -22,7 +22,7 @@ class DB {
 
   public getUser = async (id: UserId | null) => {
     if (isWorkerThread) {
-      return connectDB<UserList>(DBCommands.GET_USER, id);
+      return connectMasterDB<UserList>(DBCommands.GET_USER, id);
     }
 
     const user = this.users.find((usr) => usr.id === id) ?? null;
@@ -31,7 +31,7 @@ class DB {
 
   public createUser = async (userData: RequestUser) => {
     if (isWorkerThread) {
-      return connectDB<UserList>(DBCommands.CREATE_USER, userData);
+      return connectMasterDB<UserList>(DBCommands.CREATE_USER, userData);
     }
 
     const user = { id: uuid.v4(), ...userData };
@@ -41,7 +41,7 @@ class DB {
 
   public updateUser = async (id: UserId | null, userData: RequestUser) => {
     if (isWorkerThread) {
-      return connectDB<UserList>(DBCommands.UPDATE_USER, id, userData);
+      return connectMasterDB<UserList>(DBCommands.UPDATE_USER, id, userData);
     }
 
     const relatedUser = this.users.find((usr) => usr.id === id);
@@ -56,7 +56,7 @@ class DB {
 
   public deleteUser = async (id: UserId | null) => {
     if (isWorkerThread) {
-      return connectDB<UserList>(DBCommands.DELETE_USER, id);
+      return connectMasterDB<UserList>(DBCommands.DELETE_USER, id);
     }
 
     const userDeleteIndex = this.users.findIndex((usr) => usr.id === id);
