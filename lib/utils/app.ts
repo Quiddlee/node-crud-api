@@ -74,7 +74,7 @@ class App {
         if (!isNativeError(e)) return;
         this.res.status(StatusCode.BAD_REQUEST).json({
           status: 'failed',
-          message: e.message,
+          message: `💥 Body parsing error! ${e.message}`,
         });
       });
   };
