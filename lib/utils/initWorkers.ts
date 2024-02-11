@@ -3,10 +3,9 @@ import { availableParallelism } from 'node:os';
 
 import db from '../../db/db';
 import { WorkerMessage } from '../../types/types';
+import { PORT } from '../const';
 
-// TODO: Move port to constants
 const NUM_CPUS = availableParallelism();
-const port = Number(process.env.PORT);
 
 /**
  * Initializes the cluster workers based on CPU cores with instance of the app on master PORT + n.
@@ -16,7 +15,7 @@ const initWorkers = () => {
   const workerPorts: number[] = [];
 
   for (let i = 1; i < NUM_CPUS; i += 1) {
-    const workersPort = port + i;
+    const workersPort = PORT + i;
     const worker = cluster.fork({ PORT: workersPort });
     workerPorts.push(workersPort);
 
