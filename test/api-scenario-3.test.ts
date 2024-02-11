@@ -29,7 +29,7 @@ const uploadUserData = {
 };
 let uploadUserId = '';
 
-describe('Test scenario 2', () => {
+describe('Test scenario 3', () => {
   afterAll(db.clearData);
 
   it('GET api/users should return empty array of users', async () => {
