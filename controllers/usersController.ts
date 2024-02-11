@@ -4,10 +4,14 @@ import isUser from '../models/user/lib/utils/isUser';
 import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req } from '../types/types';
 
-// TODO: add JSDoc comments
 // TODO: add emoji response
 // TODO: handle server errors
 
+/**
+ * Gets the list of users from the database and sends it as a JSON response.
+ * @param {ExtendedReq} _req - The incoming request object, which is not used in this function.
+ * @param {ExtendedRes} res - The outgoing response object, which is used to send the JSON response.
+ */
 export const getUserList = async (_req: ExtendedReq, res: ExtendedRes) => {
   const users = await db.getUserList();
 
@@ -20,6 +24,11 @@ export const getUserList = async (_req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
+/**
+ * Gets the user with the given id from the database and sends it as a JSON response.
+ * @param {ExtendedReq} req - The incoming request object, which contains the id of the user in the route property.
+ * @param {ExtendedRes} res - The outgoing response object, which is used to send the JSON response.
+ */
 export const getUser = async (req: ExtendedReq, res: ExtendedRes) => {
   const { id } = req.route;
   const user = await db.getUser(id);
@@ -41,6 +50,11 @@ export const getUser = async (req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
+/**
+ * Creates a new user in the database with the given data and sends it as a JSON response.
+ * @param {ExtendedReq} req - The incoming request object, which contains the user data in the body property.
+ * @param {ExtendedRes} res - The outgoing response object, which is used to send the JSON response.
+ */
 export const createUser = async (req: ExtendedReq, res: ExtendedRes) => {
   const { body } = req;
 
@@ -65,6 +79,11 @@ export const createUser = async (req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
+/**
+ * Updates the user with the given id in the database with the given data and sends it as a JSON response.
+ * @param {ExtendedReq} req - The incoming request object, which contains the user data in the body property and the user id in the route property.
+ * @param {ExtendedRes} res - The outgoing response object, which is used to send the JSON response.
+ */
 export const updateUser = async (req: ExtendedReq, res: ExtendedRes) => {
   const {
     body,
@@ -101,6 +120,11 @@ export const updateUser = async (req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
+/**
+ * Deletes the user with the given id from the database and sends a JSON response.
+ * @param {ExtendedReq} req - The incoming request object, which contains the id of the user in the route property.
+ * @param {ExtendedRes} res - The outgoing response object, which is used to send the JSON response.
+ */
 export const deleteUser = async (req: ExtendedReq, res: ExtendedRes) => {
   const { id } = req.route;
   const isDeleted = await db.deleteUser(id);
@@ -120,6 +144,11 @@ export const deleteUser = async (req: ExtendedReq, res: ExtendedRes) => {
   });
 };
 
+/**
+ * Sends a JSON response with a 404 status code and a message indicating that the route does not exist.
+ * @param {Req} _req - The incoming request object, which is not used in this function.
+ * @param {ExtendedRes} res - The outgoing response object, which is used to send the JSON response.
+ */
 export const notFound = async (_req: Req, res: ExtendedRes) => {
   res.status(StatusCode.NOT_FOUND).json({
     status: 'fail',
