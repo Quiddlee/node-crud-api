@@ -133,7 +133,7 @@ The API has the following endpoints:
       {
         "username": "user",
         "age": 20,
-        "hobbies": ["coking", "sport", "programming"]
+        "hobbies": ["cooking", "sport", "programming"]
       },
       {
         "username": "user2",
