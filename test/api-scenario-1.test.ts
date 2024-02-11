@@ -106,7 +106,7 @@ describe('Test scenario 1', () => {
 
     expect(res.body).toStrictEqual({
       status: 'fail',
-      message: 'User not found',
+      message: '😯 User not found',
     });
   });
 });

@@ -50,7 +50,7 @@ describe('Test scenario 2', () => {
 
     expect(res.body).toStrictEqual({
       status: 'fail',
-      message: 'User not found',
+      message: '😯 User not found',
     });
   });
 
@@ -62,7 +62,7 @@ describe('Test scenario 2', () => {
 
     expect(res.body).toStrictEqual({
       status: 'fail',
-      message: 'User not found',
+      message: '😯 User not found',
     });
   });
 
@@ -73,7 +73,7 @@ describe('Test scenario 2', () => {
 
     expect(res.body).toStrictEqual({
       status: 'fail',
-      message: 'User not found',
+      message: '😯 User not found',
     });
   });
 });

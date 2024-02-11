@@ -70,7 +70,7 @@ describe('Test scenario 2', () => {
 
     expect(res.body).toStrictEqual({
       status: 'fail',
-      message: `The provided data is missing required fields (username)`,
+      message: `📛 The provided data is missing required fields (username)`,
     });
   });
 
@@ -84,7 +84,7 @@ describe('Test scenario 2', () => {
 
     expect(res.body).toStrictEqual({
       status: 'fail',
-      message: `The provided data is missing required fields (username, age)`,
+      message: `📛 The provided data is missing required fields (username, age)`,
     });
   });
 
@@ -96,7 +96,7 @@ describe('Test scenario 2', () => {
 
     expect(res.body).toStrictEqual({
       status: 'fail',
-      message: `The provided data is missing required fields (username, age, hobbies)`,
+      message: `📛 The provided data is missing required fields (username, age, hobbies)`,
     });
   });
 });
