@@ -2,6 +2,7 @@ import { isNativeError } from 'node:util/types';
 
 import db from '../db/db';
 import findMissingFields from '../models/user/lib/utils/findMissingFields';
+import findWrongTypes from '../models/user/lib/utils/findWrongTypes';
 import isUser from '../models/user/lib/utils/isUser';
 import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req } from '../types/types';
@@ -84,6 +85,18 @@ export const createUser = async (req: ExtendedReq, res: ExtendedRes) => {
       res.status(StatusCode.BAD_REQUEST).json({
         status: 'fail',
         message: `The provided data is missing required fields (${missingFields})`,
+      });
+
+      return;
+    }
+
+    const userWrongTypes = findWrongTypes(body);
+    if (userWrongTypes.length !== 0) {
+      const wrongTypes = userWrongTypes.join(', ');
+
+      res.status(StatusCode.BAD_REQUEST).json({
+        status: 'fail',
+        message: `The provided data is containing wrong types (${wrongTypes})`,
       });
 
       return;
