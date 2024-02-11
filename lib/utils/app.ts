@@ -1,8 +1,9 @@
 import http, { Server } from 'http';
+import { isNativeError } from 'node:util/types';
 
 import Response, { Res } from './response';
 import Route from './route';
-import { HttpMethods } from '../../types/enums';
+import { HttpMethods, StatusCode } from '../../types/enums';
 import {
   Cb,
   ExtendedReq,
@@ -54,20 +55,28 @@ class App {
 
     // Getting the body is async operation. So we want to get body first,
     // then call middlewares or route handlers
-    this.getBody().then(async (body) => {
-      this.injectBody(body);
+    this.getBody()
+      .then(async (body) => {
+        this.injectBody(body);
 
-      // using middlewareQueue with routeTable inside.
-      // In order to make sure that if .use() method called BEFORE any route
-      // e.g. ID validation, we want it to run right before route handler (get, post, put...)
-      for await (const middleware of this.middlewareQueue) {
-        if (typeof middleware === 'function') {
-          middleware(this.req, this.res);
-        } else if (routeHandler) {
-          await routeHandler(this.req, this.res);
+        // using middlewareQueue with routeTable inside.
+        // In order to make sure that if .use() method called BEFORE any route
+        // e.g. ID validation, we want it to run right before route handler (get, post, put...)
+        for await (const middleware of this.middlewareQueue) {
+          if (typeof middleware === 'function') {
+            middleware(this.req, this.res);
+          } else if (routeHandler) {
+            await routeHandler(this.req, this.res);
+          }
         }
-      }
-    });
+      })
+      .catch((e) => {
+        if (!isNativeError(e)) return;
+        this.res.status(StatusCode.BAD_REQUEST).json({
+          status: 'failed',
+          message: e.message,
+        });
+      });
   };
 
   private getRouteHandlerAndRouteEndpoint() {
@@ -111,13 +120,16 @@ class App {
         })
         .on('end', () => {
           const body = Buffer.concat(bodyChunks).toString();
+          let parsed: RequestBody = {};
 
-          if (body) {
-            const parsed = JSON.parse(body);
+          if (!body) resolve(null);
+
+          try {
+            parsed = JSON.parse(body);
             delete parsed?.id;
             resolve(parsed);
-          } else {
-            resolve(null);
+          } catch (e) {
+            reject(new Error('Invalid JSON!'));
           }
         })
         .on('error', (e) => {
