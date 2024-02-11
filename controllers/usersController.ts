@@ -7,8 +7,6 @@ import isUser from '../models/user/lib/utils/isUser';
 import { StatusCode } from '../types/enums';
 import { ExtendedReq, ExtendedRes, Req } from '../types/types';
 
-// TODO: add emoji response
-
 /**
  * Gets the list of users from the database and sends it as a JSON response.
  * @param {ExtendedReq} _req - The incoming request object, which is not used in this function.
@@ -48,7 +46,7 @@ export const getUser = async (req: ExtendedReq, res: ExtendedRes) => {
     if (!user) {
       res.status(StatusCode.NOT_FOUND).json({
         status: 'fail',
-        message: 'User not found',
+        message: '😯 User not found',
       });
 
       return;
@@ -84,7 +82,7 @@ export const createUser = async (req: ExtendedReq, res: ExtendedRes) => {
 
       res.status(StatusCode.BAD_REQUEST).json({
         status: 'fail',
-        message: `The provided data is missing required fields (${missingFields})`,
+        message: `📛 The provided data is missing required fields (${missingFields})`,
       });
 
       return;
@@ -96,7 +94,7 @@ export const createUser = async (req: ExtendedReq, res: ExtendedRes) => {
 
       res.status(StatusCode.BAD_REQUEST).json({
         status: 'fail',
-        message: `The provided data is containing wrong types (${wrongTypes})`,
+        message: `🚫 The provided data is containing wrong types (${wrongTypes})`,
       });
 
       return;
@@ -137,7 +135,7 @@ export const updateUser = async (req: ExtendedReq, res: ExtendedRes) => {
 
       res.status(StatusCode.BAD_REQUEST).json({
         status: 'fail',
-        message: `The provided data is missing required fields (${missingFields})`,
+        message: `📛 The provided data is missing required fields (${missingFields})`,
       });
 
       return;
@@ -149,7 +147,7 @@ export const updateUser = async (req: ExtendedReq, res: ExtendedRes) => {
 
       res.status(StatusCode.BAD_REQUEST).json({
         status: 'fail',
-        message: `The provided data is containing wrong types (${wrongTypes})`,
+        message: `🚫 The provided data is containing wrong types (${wrongTypes})`,
       });
 
       return;
@@ -160,7 +158,7 @@ export const updateUser = async (req: ExtendedReq, res: ExtendedRes) => {
     if (!updatedUser) {
       res.status(StatusCode.NOT_FOUND).json({
         status: 'fail',
-        message: 'User not found',
+        message: '😯 User not found',
       });
 
       return;
@@ -195,7 +193,7 @@ export const deleteUser = async (req: ExtendedReq, res: ExtendedRes) => {
     if (!isDeleted) {
       res.status(StatusCode.NOT_FOUND).json({
         status: 'fail',
-        message: 'User not found',
+        message: '😯 User not found',
       });
 
       return;
@@ -223,6 +221,6 @@ export const deleteUser = async (req: ExtendedReq, res: ExtendedRes) => {
 export const notFound = async (_req: Req, res: ExtendedRes) => {
   res.status(StatusCode.NOT_FOUND).json({
     status: 'fail',
-    message: 'The route does not exist',
+    message: '🍃 The route does not exist',
   });
 };
