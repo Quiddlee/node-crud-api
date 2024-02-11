@@ -1,9 +1,9 @@
-import { User } from '../../usersModel';
+import { RequestBody } from '../../../../types/types';
+import { RequestUser } from '../../usersModel';
 import { REQUIRED_USER_FIELDS } from '../const';
 
-const isUser = (
-  body: Record<string, string> | Omit<User, 'id'>,
-): body is Omit<User, 'id'> => {
+const isUser = (body: RequestBody | RequestUser): body is RequestUser => {
+  if (!body) return false;
   return REQUIRED_USER_FIELDS.every((field) =>
     Object.keys(body).includes(field),
   );

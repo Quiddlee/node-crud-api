@@ -6,7 +6,7 @@ import { RequestUser } from '../models/user/usersModel';
 
 export type Req = IncomingMessage;
 
-export type RequestBody = Record<string, string> | null;
+export type RequestBody = Record<string, string | undefined> | null;
 
 export type ExtendedRes = Res & {
   json: JsonFn;

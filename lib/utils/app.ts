@@ -74,7 +74,7 @@ class App {
         if (!isNativeError(e)) return;
         this.res.status(StatusCode.BAD_REQUEST).json({
           status: 'failed',
-          message: `💥 Body parsing error! ${e.message}`,
+          message: e.message,
         });
       });
   };
@@ -120,16 +120,14 @@ class App {
         })
         .on('end', () => {
           const body = Buffer.concat(bodyChunks).toString();
-          let parsed: RequestBody = {};
-
           if (!body) resolve(null);
 
           try {
-            parsed = JSON.parse(body);
-            delete parsed?.id;
-            resolve(parsed);
+            const parsed = JSON.parse(body) as RequestBody;
+            const filteredBody = this.filterBody(parsed);
+            resolve(filteredBody);
           } catch (e) {
-            reject(new Error('Invalid JSON!'));
+            reject(new Error('💥 Invalid JSON provided!'));
           }
         })
         .on('error', (e) => {
@@ -164,6 +162,14 @@ class App {
         value: response.status,
       },
     });
+  }
+
+  private filterBody(body: RequestBody) {
+    return <RequestBody>{
+      ...(Number.isFinite(body?.age) && { age: body?.age }),
+      ...(body?.hobbies && { hobbies: body?.hobbies }),
+      ...(body?.username && { username: body?.username }),
+    };
   }
 
   private injectBody(body: RequestBody) {
