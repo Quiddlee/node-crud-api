@@ -60,9 +60,6 @@ class App {
       // using middlewareQueue with routeTable inside.
       // In order to make sure that if .use() method called BEFORE any route
       // e.g. ID validation, we want it to run right before route handler (get, post, put...)
-
-      // FIXME: remove eslint disable line
-      // eslint-disable-next-line
       for await (const middleware of this.middlewareQueue) {
         if (typeof middleware === 'function') {
           middleware(this.req, this.res);

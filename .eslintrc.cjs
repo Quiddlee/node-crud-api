@@ -28,6 +28,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     'class-methods-use-this': 'off',
     'no-process-exit': 'off',
+    'no-restricted-syntax': 'off',
     'node/no-unpublished-import': 'off',
     'node/no-missing-import': 'off',
     'node/no-unsupported-features/es-syntax': [
