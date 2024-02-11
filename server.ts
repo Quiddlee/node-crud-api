@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import cluster from 'cluster';
 import http from 'http';
-import { availableParallelism } from 'node:os';
 
 import {
   createUser,
@@ -11,60 +10,34 @@ import {
   notFound,
   updateUser,
 } from './controllers/usersController';
-import db from './db/db';
 import { Routes } from './types/enums';
-import { WorkerMessage } from './types/types';
 import App from './utils/app';
+import defineNextWorker from './utils/defineNextWorker';
 import forwardRequest from './utils/forwardRequest';
+import initWorkers from './utils/initWorkers';
 import isMulti from './utils/isMulti';
 import { validateId } from './utils/validateId';
 
 const { isPrimary } = cluster;
 
-const numCPUs = availableParallelism();
 const port = Number(process.env.PORT);
 const host = process.env.HOST;
-const workerPorts: number[] = [];
 const isMultiMode = isMulti();
 const isMasterProcess = isPrimary && isMultiMode;
-let currentWorkerNum = 0;
+let workerPorts: number[] = [];
 
 if (isMasterProcess) {
   // Master process // load balancer code
+  workerPorts = initWorkers();
+
   http
     .createServer((req, res) => {
-      const workerCreds = {
-        hostname: host,
-        port: workerPorts[currentWorkerNum],
-      };
-
+      const workerCreds = defineNextWorker(workerPorts);
       forwardRequest(req, res, workerCreds);
-
-      if (currentWorkerNum === workerPorts.length - 1) {
-        currentWorkerNum = 0;
-        return;
-      }
-      currentWorkerNum += 1;
     })
     .listen(port, host, () => {
       process.stdout.write(`The load balancer is running on port ${port}...\n`);
     });
-
-  for (let i = 1; i < numCPUs; i += 1) {
-    const workersPort = port + i;
-    const worker = cluster.fork({ PORT: workersPort });
-    workerPorts.push(workersPort);
-
-    worker.on('message', (msg: WorkerMessage) => {
-      if (!('command' in msg)) return;
-
-      const workerArgs = msg.args;
-      const dbAction = db[msg.command];
-      dbAction(...workerArgs).then((data) => {
-        worker.send({ res: data });
-      });
-    });
-  }
 } else if (isMultiMode) {
   // Worker's code
   const app = new App();
