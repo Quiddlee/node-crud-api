@@ -18,7 +18,7 @@ export type ExtendedReq = Req & {
   body: RequestBody;
 };
 
-export type Cb = (req: ExtendedReq, res: ExtendedRes) => void;
+export type Cb = (req: ExtendedReq, res: ExtendedRes) => void | Promise<void>;
 
 export type RouteTable = Record<string, Record<HttpMethods, Cb>>;
 
