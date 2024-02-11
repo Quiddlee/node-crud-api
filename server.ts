@@ -25,7 +25,6 @@ const isMasterProcess = isPrimary && isMultiMode;
 let workerPorts: number[] = [];
 
 if (isMasterProcess) {
-  // Master process | load balancer code
   workerPorts = initWorkers();
 
   http
