@@ -49,12 +49,33 @@
 				},
 				{
 					"name": "Create User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();\r",
+									"pm.environment.set(\"USER_ID\", response.data.user.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"e8e06aa1-cba7-5af0-be15-703774ccfb3b\",\r\n    \"age\": 0,\r\n    \"username\": \"test\",\r\n    \"hobbies\": [\r\n        \"test\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"id\": \"e8e06aa1-cba7-5af0-be15-703774ccfb3b\",\r\n    \"age\": 1,\r\n    \"username\": \"test\",\r\n    \"hobbies\": [\r\n        \"test\"\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -81,7 +102,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"e8e06aa1-cba7-5af0-be15-703774ccfb3b\",\r\n    \"age\": 12,\r\n    \"username\": \"changed username\",\r\n    \"hobbies\": [\r\n        \"the hobbies changed\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"id\": \"0aa5d95a-f25e-411a-8086-fb55d3fc9d67\",\r\n    \"age\": 12,\r\n    \"username\": \"changed username\",\r\n    \"hobbies\": [\r\n        \"the hobbies changed\"\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -89,14 +110,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASE_URL}}:{{PORT}}/{{USERS_ROUTE}}/{{USER_ID}}",
+							"raw": "{{BASE_URL}}:{{PORT}}/{{USERS_ROUTE}}/ec7db8fe-f18a-4053-be75-6f9e507eb638",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"port": "{{PORT}}",
 							"path": [
 								"{{USERS_ROUTE}}",
-								"{{USER_ID}}"
+								"ec7db8fe-f18a-4053-be75-6f9e507eb638"
 							]
 						}
 					},
