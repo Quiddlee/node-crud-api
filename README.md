@@ -94,7 +94,7 @@ Run unit-tests with  **Vitest**: 🧪
 npm run test
 ```
 # Working with API 🐳
-In the project root folder you can find postman collection that will make your life easy working with this API 😉
+In the project root folder, you can find a Postman collection that will make your life easier while working with the API. 😉
 
 ![postman.jpg](./public/postman.jpg)
 
