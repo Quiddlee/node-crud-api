@@ -30,6 +30,16 @@ Navigate into project folder and run 📦:
 npm install
 ```
 
+Create ```.env``` file in the root of the project and add your commercetools credentials 🔥.
+
+You can find ```.env.example``` as an example file in the project root or follow the lines below 🐺:
+
+
+```dotenv
+PORT=YOUR_PORT
+HOST=YOUR_HOST
+```
+
 Finally run a development server: 🤩
 ```
 npm run start:dev
