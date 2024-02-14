@@ -3,7 +3,7 @@
 *🦥 RS-School task.*
 
 # Getting Started 🚀
-To run the project locally, you would have to download zip file with our repository or clone it to your computer. ✨
+To run the project locally, you would have to download zip file with the repository or clone it to your computer. ✨
 
 ## Setup and Running ⚠️
 
