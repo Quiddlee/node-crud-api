@@ -1,0 +1,60 @@
+{
+  "name": "crud-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.ts",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start:dev": "nodemon",
+    "start:prod": "npm run build && node ./build/bundle.js",
+    "start:multi": "nodemon -- --multi=true",
+    "build": "webpack --config ./webpack.config.ts --env mode=production",
+    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint --fix --ext ts",
+    "format": "prettier \"./**/*.{ts,css}\"",
+    "format:fix": "prettier --write \"./**/*.{ts,css}\"",
+    "type-check": "tsc --noEmit",
+    "test": "vitest --config vitest.config.mts"
+  },
+  "author": "Bohdan Shcherbyna",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/dotenv-webpack": "^7.0.7",
+    "@types/node": "^20.11.10",
+    "@types/supertest": "^6.0.2",
+    "@types/uuid": "^9.0.8",
+    "@types/webpack": "^5.28.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.1",
+    "dotenv-webpack": "^8.0.1",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "nodemon": "^3.0.3",
+    "prettier": "^3.2.4",
+    "supertest": "^6.3.4",
+    "ts-loader": "^9.5.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2",
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
+  }
+}
+
+
+
+
